@@ -1,0 +1,58 @@
+import type { Question } from "@/types/question";
+import type { Domain } from "@/types/certification";
+
+export function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+export function selectQuestionsByDomain(
+  questions: Question[],
+  domains: Domain[],
+  totalCount: number
+): Question[] {
+  const selected: Question[] = [];
+  const byDomain = new Map<string, Question[]>();
+
+  for (const q of questions) {
+    const existing = byDomain.get(q.domain) || [];
+    existing.push(q);
+    byDomain.set(q.domain, existing);
+  }
+
+  let remaining = totalCount;
+  const domainCounts: { name: string; count: number }[] = [];
+
+  for (const domain of domains) {
+    const count = Math.round((domain.weight / 100) * totalCount);
+    domainCounts.push({ name: domain.name, count });
+    remaining -= count;
+  }
+
+  // Distribute rounding remainder to the largest domain
+  if (remaining !== 0) {
+    domainCounts.sort((a, b) => b.count - a.count);
+    domainCounts[0].count += remaining;
+  }
+
+  for (const { name, count } of domainCounts) {
+    const pool = shuffleArray(byDomain.get(name) || []);
+    selected.push(...pool.slice(0, count));
+  }
+
+  return shuffleArray(selected);
+}
+
+export function checkAnswer(
+  correctAnswers: string[],
+  selectedAnswers: string[]
+): boolean {
+  if (correctAnswers.length !== selectedAnswers.length) return false;
+  const sorted1 = [...correctAnswers].sort();
+  const sorted2 = [...selectedAnswers].sort();
+  return sorted1.every((val, idx) => val === sorted2[idx]);
+}
