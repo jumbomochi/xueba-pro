@@ -69,6 +69,7 @@ export default function PracticeClient() {
       />
 
       <QuestionCard
+        key={currentQuestion.id}
         question={currentQuestion}
         onAnswer={handleAnswer}
         showResult={showExplanation}

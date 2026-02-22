@@ -89,6 +89,7 @@ export default function MockClient() {
       </div>
 
       <QuestionCard
+        key={currentQuestion.id}
         question={currentQuestion}
         onAnswer={handleAnswer}
         showResult={false}
