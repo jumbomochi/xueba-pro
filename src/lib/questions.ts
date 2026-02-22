@@ -35,13 +35,21 @@ export function selectQuestionsByDomain(
 
   // Distribute rounding remainder to the largest domain
   if (remaining !== 0) {
-    domainCounts.sort((a, b) => b.count - a.count);
-    domainCounts[0].count += remaining;
+    const largest = domainCounts.reduce((max, d) => d.count > max.count ? d : max);
+    largest.count += remaining;
   }
 
   for (const { name, count } of domainCounts) {
-    const pool = shuffleArray(byDomain.get(name) || []);
-    selected.push(...pool.slice(0, count));
+    const pool = byDomain.get(name);
+    if (!pool || pool.length === 0) {
+      throw new Error(`No questions found for domain "${name}"`);
+    }
+    if (pool.length < count) {
+      throw new Error(
+        `Domain "${name}" needs ${count} questions but only ${pool.length} are available`
+      );
+    }
+    selected.push(...shuffleArray(pool).slice(0, count));
   }
 
   return shuffleArray(selected);

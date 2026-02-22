@@ -61,10 +61,21 @@ describe("calculateDomainScores", () => {
 
 describe("isPassing", () => {
   it("returns true when score meets passing threshold", () => {
-    expect(isPassing(80, 750)).toBe(true);
+    expect(isPassing(60, 75, 750)).toBe(true); // 60/75 = 80% -> scaled 820
   });
 
   it("returns false when score is below threshold", () => {
-    expect(isPassing(60, 750)).toBe(false);
+    expect(isPassing(45, 75, 750)).toBe(false); // 45/75 = 60% -> scaled 640
+  });
+
+  it("returns false for zero total questions", () => {
+    expect(isPassing(0, 0, 750)).toBe(false);
+  });
+
+  it("handles exact boundary correctly", () => {
+    // 750 = 100 + (correct/total) * 900 => correct/total = 650/900 ≈ 0.7222
+    // For 75 questions: 54/75 = 0.72 -> scaled 748 (fail), 55/75 = 0.7333 -> scaled 760 (pass)
+    expect(isPassing(54, 75, 750)).toBe(false);
+    expect(isPassing(55, 75, 750)).toBe(true);
   });
 });

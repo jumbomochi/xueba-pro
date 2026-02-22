@@ -40,9 +40,14 @@ export function calculateDomainScores(
   return domains;
 }
 
-// AWS uses a scaled score of 100-1000. We approximate:
-// passingScore 750 ≈ ~72% correct on a 1000-point scale
-export function isPassing(percentCorrect: number, passingScore: number): boolean {
-  const scaledScore = 100 + (percentCorrect / 100) * 900;
+/**
+ * Determine if an exam result passes using AWS-style scaled scoring (100-1000).
+ * @param correct - Number of correct answers
+ * @param total - Total number of questions
+ * @param passingScore - AWS scaled score threshold, e.g. 750
+ */
+export function isPassing(correct: number, total: number, passingScore: number): boolean {
+  if (total === 0) return false;
+  const scaledScore = 100 + (correct / total) * 900;
   return scaledScore >= passingScore;
 }
