@@ -19,6 +19,6 @@ const questionImports: Record<string, () => Promise<{ default: Question[] }>> = 
 export async function getQuestions(certificationId: string): Promise<Question[]> {
   const importer = questionImports[certificationId];
   if (!importer) return [];
-  const module = await importer();
-  return module.default;
+  const data = await importer();
+  return data.default;
 }

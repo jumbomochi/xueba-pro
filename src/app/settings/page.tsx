@@ -1,20 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { storage } from "@/lib/storage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function SettingsPage() {
-  const [apiKey, setApiKey] = useState("");
-  const [saved, setSaved] = useState(false);
+function useStoredApiKey() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => storage.getApiKey() ?? "",
+    () => ""
+  );
+}
 
-  useEffect(() => {
-    const key = storage.getApiKey();
-    if (key) setApiKey(key);
-  }, []);
+export default function SettingsPage() {
+  const storedKey = useStoredApiKey();
+  const [apiKey, setApiKey] = useState(storedKey);
+  const [saved, setSaved] = useState(false);
 
   const handleSaveKey = () => {
     if (apiKey.trim()) {

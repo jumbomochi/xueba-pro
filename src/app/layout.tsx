@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Inter } from "next/font/google";
 import { ExamProvider } from "@/contexts/exam-context";
 import "./globals.css";
@@ -18,10 +19,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="min-h-screen bg-background">
             <header className="border-b">
               <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                <a href="/" className="text-xl font-bold">xueba-pro</a>
-                <a href="/settings" className="text-sm text-muted-foreground hover:text-foreground">
+                <Link href="/" className="text-xl font-bold">xueba-pro</Link>
+                <Link href="/settings" className="text-sm text-muted-foreground hover:text-foreground">
                   Settings
-                </a>
+                </Link>
               </div>
             </header>
             <main className="container mx-auto px-4 py-8">
