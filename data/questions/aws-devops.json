@@ -1,0 +1,104 @@
+[
+  {
+    "id": "devops-001",
+    "certificationId": "aws-devops",
+    "domain": "SDLC Automation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A development team uses AWS CodePipeline to deploy a microservices application to Amazon ECS. The team wants to implement a blue/green deployment strategy that automatically rolls back if the new version's error rate exceeds 5% during a 10-minute evaluation period. Which configuration achieves this requirement?",
+    "options": [
+      { "key": "A", "text": "Configure CodePipeline to use an AWS CodeDeploy deployment group with an Amazon ECS blue/green deployment type. Define a CloudWatch alarm monitoring the HTTP 5xx error rate and configure CodeDeploy to trigger an automatic rollback when the alarm enters ALARM state during the deployment." },
+      { "key": "B", "text": "Use CodePipeline with a manual approval action between the blue and green stages. Monitor the CloudWatch metrics dashboard manually and reject the deployment if errors are observed." },
+      { "key": "C", "text": "Configure CodePipeline to deploy to a new ECS service alongside the existing one. Use Amazon Route 53 weighted routing to shift traffic gradually and write a Lambda function to check error rates and update DNS records." },
+      { "key": "D", "text": "Set up an AWS CodeBuild project that runs integration tests against the new deployment and configure CodePipeline to roll back if the build fails." }
+    ],
+    "correctAnswers": ["A"],
+    "explanation": "AWS CodeDeploy natively supports ECS blue/green deployments with automatic rollback based on CloudWatch alarms. By configuring a CloudWatch alarm on the HTTP 5xx error rate with the appropriate threshold and evaluation period, CodeDeploy will automatically shift traffic back to the original (blue) task set if the alarm triggers during the deployment window. Option B relies on manual intervention, which does not meet the automatic rollback requirement. Option C requires custom implementation and is operationally complex. Option D tests during build time, not during actual deployment traffic.",
+    "tags": ["CodePipeline", "CodeDeploy", "ECS", "Blue/Green", "CloudWatch"]
+  },
+  {
+    "id": "devops-002",
+    "certificationId": "aws-devops",
+    "domain": "Configuration Management and IaC",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company manages infrastructure across 15 AWS accounts using AWS CloudFormation. The team frequently encounters drift in production stacks where engineers make manual changes through the console. The company wants to detect and prevent configuration drift while maintaining the ability for emergency manual changes with proper approval. Which approach BEST addresses this requirement?",
+    "options": [
+      { "key": "A", "text": "Enable CloudFormation drift detection on all stacks and schedule it to run hourly using Amazon EventBridge. Use Service Control Policies to deny all write actions except through CloudFormation." },
+      { "key": "B", "text": "Enable CloudFormation drift detection scheduled via EventBridge, send drift notifications to an SNS topic, and use IAM policies that deny direct resource modification for standard roles while maintaining a break-glass emergency role that requires MFA and logs to CloudTrail." },
+      { "key": "C", "text": "Use AWS Config rules to detect resource configuration changes and automatically revert them using Systems Manager Automation runbooks." },
+      { "key": "D", "text": "Import all resources into AWS CDK stacks and use cdk diff in a nightly CI/CD pipeline to detect any differences between desired and actual state." }
+    ],
+    "correctAnswers": ["B"],
+    "explanation": "Option B provides a balanced approach: scheduled drift detection catches unintended changes, SNS notifications ensure visibility, and the IAM strategy prevents casual manual changes while allowing controlled emergency access. The break-glass role with MFA and CloudTrail logging maintains an audit trail. Option A blocks all manual changes including emergency ones, which is too rigid. Option C auto-reverts all changes which could undo legitimate emergency fixes. Option D only checks nightly, leaving a large detection gap, and requires migration to CDK.",
+    "tags": ["CloudFormation", "Drift Detection", "IAM", "EventBridge", "SNS"]
+  },
+  {
+    "id": "devops-003",
+    "certificationId": "aws-devops",
+    "domain": "Resilient Cloud Solutions",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company operates a stateless web application across three Availability Zones in an Auto Scaling group behind an Application Load Balancer. During a recent AZ failure, the application experienced degraded performance because the Auto Scaling group did not replace instances quickly enough. The target is to maintain application performance even if an entire AZ becomes unavailable. What should the DevOps engineer implement?",
+    "options": [
+      { "key": "A", "text": "Configure the Auto Scaling group with a minimum capacity equal to the peak load requirement spread across two AZs, so the loss of one AZ still leaves sufficient capacity in the remaining two AZs." },
+      { "key": "B", "text": "Set the Auto Scaling group cooldown period to 0 seconds and reduce the health check grace period to 10 seconds to speed up instance replacement." },
+      { "key": "C", "text": "Enable Auto Scaling group AZ rebalancing and configure predictive scaling policies based on historical traffic patterns." },
+      { "key": "D", "text": "Deploy the application across six Availability Zones instead of three and reduce the instance count per AZ." }
+    ],
+    "correctAnswers": ["A"],
+    "explanation": "The N+1 AZ redundancy pattern ensures that even if one AZ fails, the remaining AZs have sufficient capacity to handle the full load without waiting for new instances to launch. By sizing minimum capacity so that any two of three AZs can handle peak traffic, the application maintains performance immediately during an AZ failure. Option B speeds up scaling but new instances still take time to launch, configure, and pass health checks. Option C helps with predictable traffic patterns but does not solve the immediate capacity gap during AZ failure. Option D spreads resources thinner and most Regions do not have six AZs.",
+    "tags": ["Auto Scaling", "ALB", "High Availability", "Multi-AZ", "Resilience"]
+  },
+  {
+    "id": "devops-004",
+    "certificationId": "aws-devops",
+    "domain": "Monitoring and Logging",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company runs containerized microservices on Amazon EKS. The operations team needs to implement centralized logging that correlates logs from multiple services for a single user request, supports full-text search with sub-second query latency, and retains logs for 90 days. The solution should require minimal operational management. Which architecture should the DevOps engineer implement?",
+    "options": [
+      { "key": "A", "text": "Deploy Fluent Bit as a DaemonSet on EKS to collect container logs, forward them to Amazon OpenSearch Service with a 90-day index lifecycle policy, and use correlation IDs in log entries to trace requests across services." },
+      { "key": "B", "text": "Configure each microservice to write logs directly to Amazon CloudWatch Logs, create a CloudWatch Logs Insights query for each service, and use X-Ray for request tracing." },
+      { "key": "C", "text": "Deploy a self-managed Elasticsearch cluster on EC2 instances, use Filebeat on each EKS node to ship logs, and configure index lifecycle management for 90-day retention." },
+      { "key": "D", "text": "Stream container stdout to Amazon Kinesis Data Firehose, transform logs with AWS Lambda, and store in Amazon S3. Use Amazon Athena for log queries." }
+    ],
+    "correctAnswers": ["A"],
+    "explanation": "Fluent Bit as a DaemonSet efficiently collects logs from all containers on each EKS node. Amazon OpenSearch Service provides fully managed full-text search with sub-second query latency and supports index lifecycle policies for the 90-day retention requirement. Correlation IDs embedded in log entries enable cross-service request tracing. Option B can work but CloudWatch Logs Insights does not provide the same sub-second full-text search performance as OpenSearch. Option C requires managing the Elasticsearch cluster, adding operational overhead. Option D with Athena does not provide sub-second query latency for log searches.",
+    "tags": ["EKS", "OpenSearch", "Fluent Bit", "Centralized Logging", "Containers"]
+  },
+  {
+    "id": "devops-005",
+    "certificationId": "aws-devops",
+    "domain": "Incident and Event Response",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company needs to implement an automated incident response for unauthorized API calls in their AWS environment. When an IAM access key is used from an IP address outside the corporate network, the system must immediately disable the access key, notify the security team, and create a forensic snapshot of the associated EC2 instances. Which solution automates this workflow?",
+    "options": [
+      { "key": "A", "text": "Enable Amazon GuardDuty to detect anomalous API activity. Create an EventBridge rule for GuardDuty UnauthorizedAccess findings that triggers a Step Functions workflow to disable the IAM key, publish to an SNS topic, and create EBS snapshots of associated instances." },
+      { "key": "B", "text": "Configure AWS CloudTrail to send logs to CloudWatch Logs. Create a metric filter for API calls from non-corporate IPs. Set a CloudWatch alarm that triggers an SNS notification to the security team." },
+      { "key": "C", "text": "Use AWS Config rules to evaluate IAM access key usage patterns and trigger auto-remediation via Systems Manager when a non-compliant access pattern is detected." },
+      { "key": "D", "text": "Deploy a custom Lambda function that polls CloudTrail events every minute, checks source IP addresses against an allowlist, and takes remediation actions for unauthorized calls." }
+    ],
+    "correctAnswers": ["A"],
+    "explanation": "Amazon GuardDuty uses machine learning to detect unauthorized and anomalous API activity, including access from unusual IP addresses. EventBridge captures GuardDuty findings in near real-time, and Step Functions orchestrates the multi-step incident response: disabling the key (IAM API), notifying the team (SNS), and creating forensic snapshots (EC2 API). This is fully automated and event-driven. Option B only sends notifications without automated remediation. Option C evaluates configuration compliance, not real-time API activity. Option D introduces polling latency and requires maintaining custom code and an IP allowlist.",
+    "tags": ["GuardDuty", "EventBridge", "Step Functions", "Incident Response", "IAM"]
+  },
+  {
+    "id": "devops-006",
+    "certificationId": "aws-devops",
+    "domain": "Security and Compliance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company must ensure that all Amazon EBS volumes attached to EC2 instances are encrypted. Any unencrypted EBS volume must be detected within 1 hour and automatically encrypted. The solution must work across all AWS accounts in the organization without requiring changes to existing deployment pipelines. Which approach provides continuous compliance enforcement?",
+    "options": [
+      { "key": "A", "text": "Enable the AWS Config managed rule encrypted-volumes across all accounts using AWS CloudFormation StackSets. Create a remediation action that triggers a Systems Manager Automation document to create an encrypted snapshot of unencrypted volumes and replace them." },
+      { "key": "B", "text": "Create an SCP in AWS Organizations that denies the ec2:CreateVolume action when the Encrypted condition key is false." },
+      { "key": "C", "text": "Enable EBS encryption by default in each account and Region using an EventBridge rule that triggers a Lambda function to enable the setting if it is ever disabled." },
+      { "key": "D", "text": "Deploy Amazon Inspector across all accounts to scan for unencrypted EBS volumes and generate findings that are sent to AWS Security Hub for manual review." }
+    ],
+    "correctAnswers": ["A"],
+    "explanation": "AWS Config with the encrypted-volumes managed rule continuously evaluates EBS volumes for encryption compliance. CloudFormation StackSets deploys this rule across all organization accounts. The auto-remediation action via Systems Manager Automation can create an encrypted copy of an unencrypted volume and swap it, achieving the automatic encryption requirement within the detection window. Option B prevents creation of new unencrypted volumes but does not address existing unencrypted volumes. Option C enables default encryption for new volumes but does not detect or remediate existing unencrypted ones. Option D provides detection but not automated remediation.",
+    "tags": ["AWS Config", "EBS", "Encryption", "StackSets", "Systems Manager"]
+  }
+]

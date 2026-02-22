@@ -1,0 +1,87 @@
+[
+  {
+    "id": "sap-001",
+    "certificationId": "aws-sap",
+    "domain": "Design Solutions for Organizational Complexity",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A global enterprise is consolidating multiple AWS accounts under a single AWS Organization. Each business unit currently manages its own networking with overlapping CIDR ranges. The company needs a solution that enables inter-VPC communication across accounts while maintaining centralized network management and minimizing the number of connections. Which approach should the solutions architect recommend?",
+    "options": [
+      { "key": "A", "text": "Create VPC peering connections between all VPCs across accounts and update route tables in each VPC to enable cross-account communication." },
+      { "key": "B", "text": "Deploy AWS Transit Gateway in the networking account, share it via AWS RAM with all member accounts, and attach each VPC to the Transit Gateway." },
+      { "key": "C", "text": "Set up a hub-and-spoke VPN topology using AWS Site-to-Site VPN connections between a central VPC and each spoke VPC in the member accounts." },
+      { "key": "D", "text": "Use AWS PrivateLink to create VPC endpoint services in each account and establish cross-account endpoint connections for inter-VPC traffic." }
+    ],
+    "correctAnswers": ["B"],
+    "explanation": "AWS Transit Gateway provides a centralized hub for connecting multiple VPCs across accounts. By deploying it in a networking account and sharing via AWS Resource Access Manager (RAM), all member accounts can attach their VPCs. This creates a hub-and-spoke model that scales efficiently and avoids the N-to-N complexity of VPC peering. VPC peering (A) does not scale well with many VPCs due to the full-mesh requirement. VPN (C) adds unnecessary complexity and latency. PrivateLink (D) is designed for service-to-service communication, not general inter-VPC routing.",
+    "tags": ["Transit Gateway", "AWS Organizations", "VPC", "AWS RAM", "Multi-Account"]
+  },
+  {
+    "id": "sap-002",
+    "certificationId": "aws-sap",
+    "domain": "Design for New Solutions",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company is designing a new multi-tier web application that must meet strict compliance requirements for data residency within the EU. The application needs to serve users globally with low latency while ensuring that all personally identifiable information (PII) remains stored and processed exclusively in the eu-west-1 Region. Static assets can be cached globally. Which architecture meets these requirements?",
+    "options": [
+      { "key": "A", "text": "Deploy the entire application stack in eu-west-1 and use Amazon CloudFront with a custom origin in eu-west-1 and geo-restriction to block non-EU users." },
+      { "key": "B", "text": "Deploy the application tier and database in eu-west-1. Use Amazon CloudFront with edge locations globally for static content, and use Lambda@Edge to route API requests containing PII exclusively to the eu-west-1 origin." },
+      { "key": "C", "text": "Deploy the full application in multiple Regions using Amazon DynamoDB global tables for data replication and restrict PII fields using client-side encryption." },
+      { "key": "D", "text": "Deploy static assets in Amazon S3 buckets across multiple Regions with CloudFront, and replicate the database to us-east-1 using encrypted Amazon RDS read replicas for better performance." }
+    ],
+    "correctAnswers": ["B"],
+    "explanation": "Option B satisfies both requirements: low global latency for static content via CloudFront edge locations, and data residency compliance by keeping all PII processing and storage in eu-west-1. Lambda@Edge can inspect requests and ensure PII-containing API calls are routed only to the eu-west-1 origin. Option A would block non-EU users, which contradicts the global user requirement. Option C replicates data globally via DynamoDB global tables, violating data residency. Option D replicates the database to us-east-1, also violating the EU-only storage requirement.",
+    "tags": ["CloudFront", "Lambda@Edge", "Data Residency", "Compliance", "Multi-Region"]
+  },
+  {
+    "id": "sap-003",
+    "certificationId": "aws-sap",
+    "domain": "Continuous Improvement for Existing Solutions",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company runs a legacy monolithic application on a fleet of Amazon EC2 instances behind an Application Load Balancer. The application experiences unpredictable traffic spikes that cause performance degradation. The operations team has identified that the application's session management module and the image processing module consume the most resources during spikes. The company wants to improve scalability with minimal changes to the existing codebase. What should the solutions architect recommend?",
+    "options": [
+      { "key": "A", "text": "Migrate the entire application to AWS Lambda functions behind Amazon API Gateway to achieve automatic scaling." },
+      { "key": "B", "text": "Extract the session management into Amazon ElastiCache and offload image processing to an Amazon SQS queue consumed by a separate Auto Scaling group of EC2 instances." },
+      { "key": "C", "text": "Increase the EC2 instance size to a compute-optimized instance type and enable Enhanced Networking for better throughput." },
+      { "key": "D", "text": "Deploy the application on Amazon ECS with AWS Fargate and configure Service Auto Scaling based on CPU utilization." }
+    ],
+    "correctAnswers": ["B"],
+    "explanation": "Option B applies the strangler fig pattern to decouple the two most resource-intensive components with minimal codebase changes. Moving session state to ElastiCache removes session affinity constraints and enables better horizontal scaling. Offloading image processing to SQS with a dedicated Auto Scaling group allows that workload to scale independently. Option A requires a complete rewrite. Option C is vertical scaling and does not address the architectural bottleneck. Option D requires containerizing the entire application, which is more invasive than extracting two modules.",
+    "tags": ["ElastiCache", "SQS", "Auto Scaling", "EC2", "Decoupling"]
+  },
+  {
+    "id": "sap-004",
+    "certificationId": "aws-sap",
+    "domain": "Accelerate Workload Migration and Modernization",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company is migrating 200 on-premises virtual machines to AWS. The VMs run various Linux and Windows workloads including web servers, application servers, and database servers. The company wants to minimize downtime during migration and needs to maintain the same IP addresses and hostnames in the cloud for application compatibility. The migration must be completed within a 3-month window. Which migration strategy should the solutions architect recommend?",
+    "options": [
+      { "key": "A", "text": "Use AWS Application Migration Service (AWS MGN) to perform continuous block-level replication from on-premises servers to AWS, then perform cutover during maintenance windows with minimal downtime." },
+      { "key": "B", "text": "Export each VM as an OVA file, upload to Amazon S3, and use VM Import/Export to create AMIs. Launch new EC2 instances from the AMIs." },
+      { "key": "C", "text": "Redeploy all applications on new EC2 instances using AWS CloudFormation templates and migrate data using AWS DataSync." },
+      { "key": "D", "text": "Use AWS Database Migration Service for all servers and AWS Schema Conversion Tool to handle OS-level differences between on-premises and AWS." }
+    ],
+    "correctAnswers": ["A"],
+    "explanation": "AWS Application Migration Service (AWS MGN) is the recommended service for lift-and-shift migrations at scale. It performs continuous block-level replication, which minimizes downtime because servers are kept in sync until cutover. It supports both Linux and Windows, handles 200 servers efficiently, and preserves the server configuration including network settings. Option B (VM Import/Export) is slower and causes longer downtime since it requires exporting, uploading, and importing each VM. Option C is a re-platform approach requiring significant effort. Option D (DMS) is for database migration only, not full server migration.",
+    "tags": ["AWS MGN", "Migration", "EC2", "Lift-and-Shift", "VM Import"]
+  },
+  {
+    "id": "sap-005",
+    "certificationId": "aws-sap",
+    "domain": "Design Solutions for Organizational Complexity",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A financial services company uses AWS Organizations with multiple OUs. The security team requires that all Amazon S3 buckets across all accounts must have server-side encryption enabled and public access blocked. They also need to prevent any member account from disabling these controls. Which combination of services provides the MOST comprehensive enforcement?",
+    "options": [
+      { "key": "A", "text": "Enable AWS Config rules in each account to detect non-compliant S3 buckets and use AWS Systems Manager Automation to auto-remediate." },
+      { "key": "B", "text": "Apply Service Control Policies (SCPs) at the organization root to deny s3:PutBucketPolicy and s3:DeleteBucketEncryption actions, and use S3 Block Public Access at the account level set by the management account." },
+      { "key": "C", "text": "Use AWS CloudTrail to monitor S3 API calls and trigger an AWS Lambda function to revert any non-compliant bucket configuration changes." },
+      { "key": "D", "text": "Create an IAM policy in each account that denies the ability to create unencrypted S3 buckets and attach it to all IAM users and roles." }
+    ],
+    "correctAnswers": ["B"],
+    "explanation": "SCPs provide preventive controls that member accounts cannot override, making them the strongest enforcement mechanism in AWS Organizations. By denying actions that would remove encryption or modify bucket policies at the organization level, combined with account-level S3 Block Public Access settings managed by the management account, the security team achieves comprehensive enforcement. Option A is detective and reactive, not preventive. Option C is also reactive and introduces latency. Option D can be bypassed by account administrators who can modify IAM policies.",
+    "tags": ["AWS Organizations", "SCP", "S3", "Encryption", "Security"]
+  }
+]

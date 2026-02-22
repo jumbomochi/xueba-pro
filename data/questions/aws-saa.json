@@ -1,0 +1,87 @@
+[
+  {
+    "id": "saa-001",
+    "certificationId": "aws-saa",
+    "domain": "Design Secure Architectures",
+    "difficulty": "associate",
+    "type": "single",
+    "stem": "A company is building a web application that stores sensitive customer data in Amazon S3. The security team requires that all data must be encrypted at rest using keys managed by the company, with the ability to rotate keys annually and audit key usage. Which approach meets these requirements with the LEAST operational overhead?",
+    "options": [
+      { "key": "A", "text": "Use SSE-S3 encryption and enable automatic key rotation in Amazon S3 settings." },
+      { "key": "B", "text": "Use SSE-KMS encryption with an AWS KMS customer managed key, enable automatic annual key rotation, and monitor usage via AWS CloudTrail." },
+      { "key": "C", "text": "Use SSE-C encryption and implement a custom key rotation mechanism using AWS Lambda and AWS Secrets Manager." },
+      { "key": "D", "text": "Use client-side encryption with keys stored in AWS CloudHSM and build a custom key rotation pipeline." }
+    ],
+    "correctAnswers": ["B"],
+    "explanation": "SSE-KMS with a customer managed key provides company-controlled encryption, built-in automatic annual key rotation, and full audit logging through CloudTrail integration. This meets all requirements with minimal operational overhead. SSE-S3 (A) uses AWS-managed keys, not company-managed. SSE-C (C) requires the company to manage and supply keys with every request, creating high operational overhead. CloudHSM (D) provides the most control but at significantly higher cost and operational complexity than needed.",
+    "tags": ["S3", "KMS", "Encryption", "CloudTrail", "Security"]
+  },
+  {
+    "id": "saa-002",
+    "certificationId": "aws-saa",
+    "domain": "Design Resilient Architectures",
+    "difficulty": "associate",
+    "type": "single",
+    "stem": "A company runs a critical e-commerce application with a primary database in us-east-1. The business requires that the application can recover from a complete Regional outage with a Recovery Time Objective (RTO) of 1 hour and a Recovery Point Objective (RPO) of 5 minutes. Which database architecture meets these requirements?",
+    "options": [
+      { "key": "A", "text": "Use Amazon RDS Multi-AZ deployment in us-east-1 with automated backups enabled every 5 minutes." },
+      { "key": "B", "text": "Use Amazon Aurora Global Database with a primary cluster in us-east-1 and a secondary cluster in us-west-2, with replication lag typically under 1 second." },
+      { "key": "C", "text": "Use Amazon RDS with a read replica in us-west-2 and manually promote the replica during a Regional outage." },
+      { "key": "D", "text": "Use Amazon DynamoDB global tables with replication to us-west-2 and enable point-in-time recovery." }
+    ],
+    "correctAnswers": ["B"],
+    "explanation": "Amazon Aurora Global Database replicates data from the primary Region to secondary Regions with typical replication lag under 1 second, achieving an RPO well within 5 minutes. In a Regional failure, the secondary cluster can be promoted to primary in under 1 minute, meeting the 1-hour RTO. Multi-AZ (A) does not protect against Regional failures. RDS read replicas (C) have higher replication lag and manual promotion is error-prone. DynamoDB global tables (D) would require re-architecting the application for a NoSQL database.",
+    "tags": ["Aurora", "Global Database", "Multi-Region", "Disaster Recovery", "RDS"]
+  },
+  {
+    "id": "saa-003",
+    "certificationId": "aws-saa",
+    "domain": "Design High-Performing Architectures",
+    "difficulty": "associate",
+    "type": "single",
+    "stem": "A media company serves video content to millions of users worldwide. Users report slow load times for video thumbnails and metadata API responses. The thumbnails are stored in Amazon S3 and the metadata is served by an Amazon RDS MySQL database. Which combination of services would MOST improve the application's performance?",
+    "options": [
+      { "key": "A", "text": "Move thumbnails to Amazon EBS volumes attached to EC2 instances in multiple Regions, and increase the RDS instance size." },
+      { "key": "B", "text": "Enable S3 Transfer Acceleration for thumbnail uploads and add Amazon RDS read replicas in each Region." },
+      { "key": "C", "text": "Place Amazon CloudFront in front of S3 for thumbnail delivery and add Amazon ElastiCache for Redis to cache frequently accessed metadata queries." },
+      { "key": "D", "text": "Use AWS Global Accelerator to route users to the nearest S3 bucket and enable RDS Proxy for database connection pooling." }
+    ],
+    "correctAnswers": ["C"],
+    "explanation": "CloudFront caches thumbnails at edge locations worldwide, dramatically reducing latency for static content delivery from S3. ElastiCache for Redis caches frequently accessed metadata queries, reducing load on the RDS database and providing sub-millisecond response times. Option A uses EBS which does not serve content globally and is more expensive. Option B uses Transfer Acceleration which helps uploads, not downloads, and read replicas add complexity without caching benefit. Option D uses Global Accelerator which is better for TCP/UDP applications, not S3 content delivery.",
+    "tags": ["CloudFront", "ElastiCache", "S3", "RDS", "Caching"]
+  },
+  {
+    "id": "saa-004",
+    "certificationId": "aws-saa",
+    "domain": "Design Cost-Optimized Architectures",
+    "difficulty": "associate",
+    "type": "single",
+    "stem": "A startup runs a batch data processing pipeline that executes every night for approximately 4 hours. The workload is fault-tolerant and can be interrupted and resumed. The pipeline uses 20 Amazon EC2 instances with c5.2xlarge instance type. Currently all instances are On-Demand. The company wants to reduce compute costs by at least 60% without affecting the nightly processing window. Which purchasing strategy should the solutions architect recommend?",
+    "options": [
+      { "key": "A", "text": "Purchase Reserved Instances with a 1-year term for all 20 instances to receive a discounted hourly rate." },
+      { "key": "B", "text": "Use Amazon EC2 Spot Instances for the batch workload with a diversified fleet across multiple instance types and Availability Zones, and configure Spot Instance interruption handling." },
+      { "key": "C", "text": "Migrate the workload to AWS Lambda functions to pay only for the compute time used during processing." },
+      { "key": "D", "text": "Use a Savings Plan with a 3-year commitment to receive the maximum discount on EC2 usage." }
+    ],
+    "correctAnswers": ["B"],
+    "explanation": "EC2 Spot Instances offer up to 90% discount compared to On-Demand pricing and are ideal for fault-tolerant, interruptible batch workloads. By diversifying across instance types and AZs, the likelihood of interruption is minimized. This easily achieves the 60% cost reduction target. Reserved Instances (A) offer up to 72% savings but require commitment for instances that only run 4 hours per day, making them cost-ineffective. Lambda (C) has a 15-minute execution limit and may not suit long-running batch processes. Savings Plans (D) also require commitment for always-on usage, which is wasteful for a 4-hour nightly job.",
+    "tags": ["EC2", "Spot Instances", "Cost Optimization", "Batch Processing", "Auto Scaling"]
+  },
+  {
+    "id": "saa-005",
+    "certificationId": "aws-saa",
+    "domain": "Design Secure Architectures",
+    "difficulty": "associate",
+    "type": "single",
+    "stem": "A company has deployed a three-tier web application in a VPC. The web tier runs in public subnets, the application tier runs in private subnets, and the database tier runs in isolated private subnets. The application tier needs to download software patches from the internet, but the security team requires that no inbound connections from the internet are allowed to the private subnets. Which solution meets this requirement?",
+    "options": [
+      { "key": "A", "text": "Attach an Internet Gateway to the VPC and add a route to the Internet Gateway in the private subnet route table." },
+      { "key": "B", "text": "Deploy a NAT Gateway in a public subnet and add a route from the private subnet route table to the NAT Gateway." },
+      { "key": "C", "text": "Create a VPC endpoint for Amazon S3 and download all patches through the S3 endpoint." },
+      { "key": "D", "text": "Configure an egress-only Internet Gateway and associate it with the private subnets." }
+    ],
+    "correctAnswers": ["B"],
+    "explanation": "A NAT Gateway in a public subnet allows instances in private subnets to initiate outbound internet connections (e.g., to download patches) while preventing inbound connections from the internet. This is the standard pattern for providing internet access to private subnets. Option A would make the private subnet effectively public by routing directly to the IGW. Option C only provides access to S3, not general internet resources for patches. Option D (egress-only IGW) is for IPv6 traffic only, not IPv4.",
+    "tags": ["VPC", "NAT Gateway", "Subnets", "Security Groups", "Networking"]
+  }
+]
