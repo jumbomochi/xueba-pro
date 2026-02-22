@@ -1,0 +1,46 @@
+[
+  {
+    "id": "aws-sap",
+    "name": "AWS Certified Solutions Architect - Professional",
+    "code": "SAP-C02",
+    "domains": [
+      { "name": "Design Solutions for Organizational Complexity", "weight": 26 },
+      { "name": "Design for New Solutions", "weight": 29 },
+      { "name": "Continuous Improvement for Existing Solutions", "weight": 25 },
+      { "name": "Accelerate Workload Migration and Modernization", "weight": 20 }
+    ],
+    "totalQuestions": 75,
+    "timeMinutes": 180,
+    "passingScore": 750
+  },
+  {
+    "id": "aws-saa",
+    "name": "AWS Certified Solutions Architect - Associate",
+    "code": "SAA-C03",
+    "domains": [
+      { "name": "Design Secure Architectures", "weight": 30 },
+      { "name": "Design Resilient Architectures", "weight": 26 },
+      { "name": "Design High-Performing Architectures", "weight": 24 },
+      { "name": "Design Cost-Optimized Architectures", "weight": 20 }
+    ],
+    "totalQuestions": 65,
+    "timeMinutes": 130,
+    "passingScore": 720
+  },
+  {
+    "id": "aws-devops",
+    "name": "AWS Certified DevOps Engineer - Professional",
+    "code": "DOP-C02",
+    "domains": [
+      { "name": "SDLC Automation", "weight": 22 },
+      { "name": "Configuration Management and IaC", "weight": 17 },
+      { "name": "Resilient Cloud Solutions", "weight": 15 },
+      { "name": "Monitoring and Logging", "weight": 15 },
+      { "name": "Incident and Event Response", "weight": 14 },
+      { "name": "Security and Compliance", "weight": 17 }
+    ],
+    "totalQuestions": 75,
+    "timeMinutes": 180,
+    "passingScore": 750
+  }
+]
