@@ -32,10 +32,11 @@ export function DomainChart({ domainScores }: DomainChartProps) {
         <XAxis type="number" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
         <YAxis type="category" dataKey="name" width={200} tick={{ fontSize: 12 }} />
         <Tooltip
-          formatter={(value: number, _name: string, props) => [
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          formatter={((value: number, _name: string, props: any) => [
             `${props.payload.correct}/${props.payload.total} (${value}%)`,
             props.payload.fullName,
-          ]}
+          ]) as never}
         />
         <Bar dataKey="score" radius={[0, 4, 4, 0]}>
           {data.map((entry, index) => (
