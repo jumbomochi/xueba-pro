@@ -76,6 +76,12 @@ export default function MockClient() {
     finishExam();
   };
 
+  const handleEndEarly = () => {
+    if (window.confirm(`You have answered ${state.answers.length} of ${state.questions.length} questions. End the exam now?`)) {
+      finishExam();
+    }
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
@@ -111,9 +117,13 @@ export default function MockClient() {
             state.currentIndex < state.questions.length - 1 && (
               <Button onClick={handleNext}>Next</Button>
             )}
-          {state.answers.length === state.questions.length && (
+          {state.answers.length === state.questions.length ? (
             <Button variant="default" onClick={handleFinish}>
               Finish Exam
+            </Button>
+          ) : (
+            <Button variant="outline" onClick={handleEndEarly}>
+              End Exam
             </Button>
           )}
         </div>
