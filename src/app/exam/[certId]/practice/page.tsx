@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getCertifications } from "@/lib/data";
 import PracticeClient from "./practice-client";
 
@@ -6,5 +7,9 @@ export function generateStaticParams() {
 }
 
 export default function PracticePage() {
-  return <PracticeClient />;
+  return (
+    <Suspense fallback={<p className="text-center text-muted-foreground">Loading questions...</p>}>
+      <PracticeClient />
+    </Suspense>
+  );
 }

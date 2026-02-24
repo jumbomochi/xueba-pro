@@ -55,6 +55,20 @@ export function selectQuestionsByDomain(
   return shuffleArray(selected);
 }
 
+export function filterByDomains(questions: Question[], domainNames: string[]): Question[] {
+  if (domainNames.length === 0) return questions;
+  const domainSet = new Set(domainNames);
+  return questions.filter((q) => domainSet.has(q.domain));
+}
+
+export function countByDomain(questions: Question[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const q of questions) {
+    counts[q.domain] = (counts[q.domain] || 0) + 1;
+  }
+  return counts;
+}
+
 export function checkAnswer(
   correctAnswers: string[],
   selectedAnswers: string[]

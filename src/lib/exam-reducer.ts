@@ -12,6 +12,15 @@ export type ExamAction =
         timeLimitMs: number | null;
       };
     }
+  | {
+      type: "RESUME_EXAM";
+      payload: {
+        certificationId: string;
+        questions: Question[];
+        answers: UserAnswer[];
+        currentIndex: number;
+      };
+    }
   | { type: "ANSWER_QUESTION"; payload: { selectedAnswers: string[] } }
   | { type: "NEXT_QUESTION" }
   | { type: "GO_TO_QUESTION"; payload: { index: number } }
@@ -41,6 +50,18 @@ export function examReducer(state: ExamSession, action: ExamAction): ExamSession
         answers: [],
         startedAt: Date.now(),
         timeRemainingMs: action.payload.timeLimitMs,
+        isComplete: false,
+      };
+
+    case "RESUME_EXAM":
+      return {
+        certificationId: action.payload.certificationId,
+        mode: "practice",
+        questions: action.payload.questions,
+        currentIndex: action.payload.currentIndex,
+        answers: action.payload.answers,
+        startedAt: Date.now(),
+        timeRemainingMs: null,
         isComplete: false,
       };
 

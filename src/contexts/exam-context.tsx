@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useReducer, useCallback, useEffect, useRef } from "react";
 import type { ReactNode } from "react";
-import type { ExamSession, ExamMode } from "@/types/exam-session";
+import type { ExamSession, ExamMode, UserAnswer } from "@/types/exam-session";
 import type { Question } from "@/types/question";
 import { examReducer, initialExamState } from "@/lib/exam-reducer";
 
@@ -13,6 +13,12 @@ interface ExamContextValue {
     mode: ExamMode,
     questions: Question[],
     timeLimitMs: number | null
+  ) => void;
+  resumeExam: (
+    certificationId: string,
+    questions: Question[],
+    answers: UserAnswer[],
+    currentIndex: number
   ) => void;
   answerQuestion: (selectedAnswers: string[]) => void;
   nextQuestion: () => void;
@@ -45,6 +51,13 @@ export function ExamProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const resumeExam = useCallback(
+    (certificationId: string, questions: Question[], answers: UserAnswer[], currentIndex: number) => {
+      dispatch({ type: "RESUME_EXAM", payload: { certificationId, questions, answers, currentIndex } });
+    },
+    []
+  );
+
   const answerQuestion = useCallback((selectedAnswers: string[]) => {
     dispatch({ type: "ANSWER_QUESTION", payload: { selectedAnswers } });
   }, []);
@@ -67,7 +80,7 @@ export function ExamProvider({ children }: { children: ReactNode }) {
 
   return (
     <ExamContext.Provider
-      value={{ state, startExam, answerQuestion, nextQuestion, goToQuestion, finishExam, reset }}
+      value={{ state, startExam, resumeExam, answerQuestion, nextQuestion, goToQuestion, finishExam, reset }}
     >
       {children}
     </ExamContext.Provider>
