@@ -8,7 +8,7 @@ interface CertificationCardProps {
 }
 
 export function CertificationCard({ certification }: CertificationCardProps) {
-  const isProfessional = certification.code.startsWith("SAP") || certification.code.startsWith("DOP");
+  const isProfessional = certification.code.startsWith("SAP") || certification.code.startsWith("DOP") || certification.code.startsWith("AIP");
 
   return (
     <Link href={`/exam/${certification.id}`}>

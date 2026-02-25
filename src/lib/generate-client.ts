@@ -28,7 +28,7 @@ export async function generateQuestionsOnDemand(
   });
 
   const difficulty =
-    cert.code.startsWith("SAP") || cert.code.startsWith("DOP")
+    cert.code.startsWith("SAP") || cert.code.startsWith("DOP") || cert.code.startsWith("AIP")
       ? "professional"
       : "associate";
 
