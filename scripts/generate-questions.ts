@@ -26,7 +26,7 @@ async function generateForDomain(
   count: number
 ): Promise<Question[]> {
   const difficulty =
-    cert.code.startsWith("SAP") || cert.code.startsWith("DOP")
+    cert.code.startsWith("SAP") || cert.code.startsWith("DOP") || cert.code.startsWith("AIP")
       ? ("professional" as const)
       : ("associate" as const);
 

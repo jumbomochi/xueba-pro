@@ -3,11 +3,13 @@ import { QuestionSchema } from "@/types/question";
 import awsSap from "../../../data/questions/aws-sap.json";
 import awsSaa from "../../../data/questions/aws-saa.json";
 import awsDevops from "../../../data/questions/aws-devops.json";
+import awsAip from "../../../data/questions/aws-aip.json";
 
 const banks = [
   { name: "aws-sap", questions: awsSap },
   { name: "aws-saa", questions: awsSaa },
   { name: "aws-devops", questions: awsDevops },
+  { name: "aws-aip", questions: awsAip },
 ];
 
 describe("question banks", () => {

@@ -42,5 +42,20 @@
     "totalQuestions": 75,
     "timeMinutes": 180,
     "passingScore": 750
+  },
+  {
+    "id": "aws-aip",
+    "name": "AWS Certified Generative AI Developer - Professional",
+    "code": "AIP-C01",
+    "domains": [
+      { "name": "Foundation Model Integration, Data Management, and Compliance", "weight": 31 },
+      { "name": "Implementation and Integration", "weight": 26 },
+      { "name": "AI Safety, Security, and Governance", "weight": 20 },
+      { "name": "Operational Efficiency and Optimization for GenAI Applications", "weight": 12 },
+      { "name": "Testing, Validation, and Troubleshooting", "weight": 11 }
+    ],
+    "totalQuestions": 65,
+    "timeMinutes": 170,
+    "passingScore": 750
   }
 ]
