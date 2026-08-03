@@ -1832,12 +1832,12 @@
     ]
   },
   {
-    "id": "17666d256ced",
+    "id": "9f8eb3c09819",
     "certificationId": "aws-ans",
     "domain": "Network Management and Operation",
     "difficulty": "professional",
     "type": "single",
-    "stem": "A company inspects east-west traffic between spoke VPCs by using a centralized inspection VPC. The inspection VPC contains a Gateway Load Balancer with stateful third-party firewall appliances registered as targets in two Availability Zones, and the inspection VPC is attached to a transit gateway. Spoke VPC route tables send all inter-VPC traffic to the transit gateway, and the transit gateway route tables send that traffic to the inspection VPC attachment.\n\nConnections between instances that are in different Availability Zones fail immediately after the TCP three-way handshake completes, while connections between instances that are in the same Availability Zone succeed. The firewall appliance logs contain large numbers of packets that are dropped with the reason \"packet does not match an existing session.\"\n\nWhich solution will resolve the connection failures?",
+    "stem": "A company inspects east-west traffic between spoke VPCs by using a centralized inspection VPC. The inspection VPC contains a Gateway Load Balancer with stateful third-party firewall appliances registered as targets in two Availability Zones, and the inspection VPC is attached to a transit gateway. Spoke VPC route tables send all inter-VPC traffic to the transit gateway, and the transit gateway route tables send that traffic to the inspection VPC attachment.\n\nConnections between instances that are in different Availability Zones fail during the TCP three-way handshake, while connections between instances that are in the same Availability Zone succeed. The firewall appliance logs contain large numbers of packets that are dropped with the reason \"packet does not match an existing session.\"\n\nWhich solution will resolve the connection failures?",
     "options": [
       {
         "key": "A",
@@ -1905,12 +1905,12 @@
     ]
   },
   {
-    "id": "fad8ef22e35b",
+    "id": "8de5034b403f",
     "certificationId": "aws-ans",
     "domain": "Network Management and Operation",
     "difficulty": "professional",
     "type": "single",
-    "stem": "A company runs an application on Amazon EC2 instances in private subnets of a VPC that has no internet gateway, no NAT gateway, and no outbound proxy. The application must call AWS Secrets Manager.\n\nA network engineer created an interface VPC endpoint for com.amazonaws.us-east-1.secretsmanager in two Availability Zones and attached a security group that allows inbound TCP port 443 from the application subnets. Testing shows that the instances can connect over port 443 to the endpoint-specific DNS name of the interface endpoint, but the application still fails, because the standard service name secretsmanager.us-east-1.amazonaws.com resolves to a public IP address that is unreachable from the private subnets. The company cannot change the application code or its configuration files.\n\nWhich solution will meet these requirements?",
+    "stem": "A company runs an application on Amazon EC2 instances in private subnets of a VPC that has no internet gateway, no NAT gateway, and no outbound proxy. The application must call AWS Secrets Manager.\n\nA network engineer created an interface VPC endpoint for com.amazonaws.us-east-1.secretsmanager in two Availability Zones and attached a security group that allows inbound TCP port 443 from the application subnets. Testing shows that the instances can connect over port 443 to the endpoint-specific DNS name of the interface endpoint, but the application still fails, because the standard service name secretsmanager.us-east-1.amazonaws.com resolves to a public IP address that is unreachable from the private subnets. The company cannot change the application code or its configuration files.\n\nWhich solution will meet these requirements with the LEAST operational overhead?",
     "options": [
       {
         "key": "A",
@@ -1932,7 +1932,7 @@
     "correctAnswers": [
       "C"
     ],
-    "explanation": "C is correct. When private DNS is enabled on an interface endpoint, AWS creates a private hosted zone that is associated with the VPC so that the standard service name resolves to the endpoint's private IP addresses. That makes existing code work unchanged. Private DNS requires both the enableDnsSupport and enableDnsHostnames VPC attributes to be set to true, which is why they must be verified first; the option is unavailable otherwise.\n\nA is wrong because static hosts file entries are brittle and high in operational overhead. Endpoint IP addresses can change, the entry pins traffic to one Availability Zone's endpoint interface, and every new instance type, AMI, or container image must be maintained separately.\n\nB is wrong because forwarding amazonaws.com to on-premises resolvers sends the queries away from the VPC resolver. The on-premises servers return the same public IP addresses, so the application still cannot reach the service, and the change would break resolution for every other AWS service name.\n\nD is wrong because gateway VPC endpoints exist only for Amazon S3 and Amazon DynamoDB. There is no gateway endpoint for AWS Secrets Manager, so the endpoint cannot be created.",
+    "explanation": "C is correct. When private DNS is enabled on an interface endpoint, AWS creates a private hosted zone that is associated with the VPC so that the standard service name resolves to the endpoint's private IP addresses. That makes existing code work unchanged. Private DNS requires both the enableDnsSupport and enableDnsHostnames VPC attributes to be set to true, which is why they must be verified first; the option is unavailable otherwise.\n\nA is wrong on operational overhead, which is the deciding qualifier. It technically avoids touching the application, but it makes every instance carry a hand-maintained mapping: the endpoint's private IP addresses can change when an endpoint network interface is replaced, pinning one address defeats the multi-Availability Zone design, and each AMI, launch template, and container image must be updated and re-tested separately. Enabling private DNS is a single change on one resource.\n\nB is wrong because forwarding amazonaws.com to on-premises resolvers sends the queries away from the VPC resolver. The on-premises servers return the same public IP addresses, so the application still cannot reach the service, and the change would break resolution for every other AWS service name.\n\nD is wrong because gateway VPC endpoints exist only for Amazon S3 and Amazon DynamoDB. There is no gateway endpoint for AWS Secrets Manager, so the endpoint cannot be created.",
     "tags": [
       "interface VPC endpoint",
       "private DNS",
@@ -2207,12 +2207,12 @@
     ]
   },
   {
-    "id": "c0bdfb225a32",
+    "id": "d4225fb8ffeb",
     "certificationId": "aws-ans",
     "domain": "Network Management and Operation",
     "difficulty": "professional",
     "type": "single",
-    "stem": "A company recently decommissioned the two on-premises DNS servers at 10.10.0.10 and 10.10.0.11 and replaced them with Route 53 Resolver and a Route 53 private hosted zone that is associated with the VPC.\n\nApplications on the Amazon EC2 instances that were already running continue to resolve names correctly, but every newly launched instance and every instance that is rebooted fails all DNS lookups. A network engineer confirms that the VPC is still associated with a DHCP options set whose domain-name-servers value lists 10.10.0.10 and 10.10.0.11.\n\nThe engineer must restore DNS resolution for all current and future instances in the VPC with the LEAST operational overhead.\n\nWhich solution will meet these requirements?",
+    "stem": "A company recently decommissioned the two on-premises DNS servers at 10.10.0.10 and 10.10.0.11 and replaced them with Route 53 Resolver and a Route 53 private hosted zone that is associated with the VPC.\n\nDuring the cutover, an administrator manually edited the /etc/resolv.conf file on the Amazon EC2 instances that were running at the time, so applications on those instances continue to resolve names correctly. However, every newly launched instance and every instance that is rebooted fails all DNS lookups. A network engineer confirms that the VPC is still associated with a DHCP options set whose domain-name-servers value lists 10.10.0.10 and 10.10.0.11.\n\nThe engineer must restore DNS resolution for all current and future instances in the VPC with the LEAST operational overhead.\n\nWhich solution will meet these requirements?",
     "options": [
       {
         "key": "A",
@@ -2234,7 +2234,7 @@
     "correctAnswers": [
       "D"
     ],
-    "explanation": "D is correct. DHCP options sets are immutable: after a set is created its values cannot be changed, so the fix is to create a new set that specifies AmazonProvidedDNS, associate it with the VPC, and then have instances pick it up. New instances receive the value at launch, and running instances receive it when their DHCP lease renews, which can be forced with a lease renewal or a reboot. This is a single VPC-level change that covers current and future instances.\n\nA is wrong because the values of an existing DHCP options set cannot be edited. The API offers only create, associate, and delete operations for DHCP options sets, so this action cannot be performed.\n\nB is wrong because a change written directly to /etc/resolv.conf is overwritten the next time the DHCP client renews the lease or the instance reboots, and it does nothing for instances that the Auto Scaling group launches later. It also has to be repeated for every instance.\n\nC is wrong because a Resolver outbound endpoint forwards queries to the very servers that were decommissioned, so those queries fail. It also does not change which resolvers the instances are configured to use, which is the actual defect.",
+    "explanation": "D is correct. DHCP options sets are immutable: after a set is created its values cannot be changed, so the fix is to create a new set that specifies AmazonProvidedDNS, associate it with the VPC, and then have instances pick it up. New instances receive the value at launch, and running instances receive it when their DHCP lease renews, which can be forced with a lease renewal or a reboot. This is a single VPC-level change that covers current and future instances.\n\nA is wrong because the values of an existing DHCP options set cannot be edited. The API offers only create, associate, and delete operations for DHCP options sets, so this action cannot be performed.\n\nB is wrong because it repeats the workaround that has already failed. A change written directly to /etc/resolv.conf is overwritten the next time the DHCP client renews the lease or the instance reboots, which is exactly why the manually edited instances break when they restart, and it does nothing for instances that are launched later.\n\nC is wrong because a Resolver outbound endpoint forwards queries to the very servers that were decommissioned, so those queries fail. It also does not change which resolvers the instances are configured to use, which is the actual defect.",
     "tags": [
       "DHCP options set",
       "Route 53 Resolver",
