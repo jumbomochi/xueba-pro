@@ -4,12 +4,14 @@ import awsSap from "../../../data/questions/aws-sap.json";
 import awsSaa from "../../../data/questions/aws-saa.json";
 import awsDevops from "../../../data/questions/aws-devops.json";
 import awsAip from "../../../data/questions/aws-aip.json";
+import awsAns from "../../../data/questions/aws-ans.json";
 
 const banks = [
   { name: "aws-sap", questions: awsSap },
   { name: "aws-saa", questions: awsSaa },
   { name: "aws-devops", questions: awsDevops },
   { name: "aws-aip", questions: awsAip },
+  { name: "aws-ans", questions: awsAns },
 ];
 
 describe("question banks", () => {
