@@ -2241,5 +2241,746 @@
       "DNS",
       "VPC"
     ]
+  },
+  {
+    "id": "85f43a0318df",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company runs a data processing application on Amazon EC2 instances in the private subnets of a VPC in the us-east-1 Region. The instances reach the internet through a NAT gateway. A new security standard requires that the instances be able to open outbound connections only to a list of 40 approved fully qualified domain names that belong to software repositories and SaaS providers. The list changes a few times each month. Connections to any other destination must be dropped, including connections that an application makes directly to an IP address without performing a DNS lookup. The security team must be able to see which requests were dropped and which domain was requested. The solution must not require an agent on the instances.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Replace the outbound rules of the security groups that are attached to the instances with rules that reference the 40 approved fully qualified domain names on TCP port 443, remove the rule that allows all outbound traffic, and update the rules whenever the approved list changes."
+      },
+      {
+        "key": "B",
+        "text": "Deploy AWS Network Firewall with a firewall endpoint in a dedicated subnet in each Availability Zone. Create a stateful rule group that uses a domain list to allow the 40 approved names, set the firewall policy to drop other traffic, and change the default route of the private subnets to the firewall endpoints."
+      },
+      {
+        "key": "C",
+        "text": "Create a network ACL for the private subnets that has allow rules for the 40 approved fully qualified domain names on TCP port 443, a rule that allows the ephemeral port range so that the return traffic is permitted, and a final deny rule for all other traffic, and associate the network ACL with each private subnet in every Availability Zone."
+      },
+      {
+        "key": "D",
+        "text": "Create an Amazon Route 53 Resolver DNS Firewall rule group that allows the 40 approved domain names and blocks all other domains, associate the rule group with the VPC, and send the DNS Firewall query logs to Amazon CloudWatch Logs for the security team."
+      }
+    ],
+    "correctAnswers": [
+      "B"
+    ],
+    "explanation": "B is correct. AWS Network Firewall is the only service here that can match traffic on a domain name. A stateful rule group of type domain list inspects the Server Name Indication field of the TLS handshake and the Host header of cleartext HTTP requests, so it can allow the 40 approved names while the policy default action drops everything else. Because the firewall endpoint sits in the packet path, a connection that is made straight to an IP address with no DNS lookup is dropped as well, and the firewall's alert logs record the domain that was requested. Nothing is installed on the instances, and updating the list is one change to one rule group.\n\nA is incorrect because a security group rule can only reference an IP address, a CIDR block, a prefix list, or another security group. There is no way to put a fully qualified domain name in a security group rule, so this configuration cannot be created.\n\nC is incorrect for the same reason and for one more. Network ACL rules are also limited to CIDR blocks and port ranges, and they are stateless, so even an address-based version of this rule set would need matching ephemeral port rules for the return traffic.\n\nD is incorrect because DNS Firewall filters name resolution rather than traffic. An application that connects to a hard-coded IP address never issues a query, so it is unaffected, and the connection still leaves the VPC through the NAT gateway.",
+    "tags": [
+      "AWS Network Firewall",
+      "domain filtering",
+      "egress control",
+      "stateful rule group"
+    ]
+  },
+  {
+    "id": "344fb479acbe",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company has an organization in AWS Organizations with 25 workload VPCs and one inspection VPC, all in the eu-central-1 Region and all attached to a transit gateway. The inspection VPC has three subnet tiers in each of two Availability Zones: a subnet for the transit gateway attachment, a subnet that holds an AWS Network Firewall endpoint, and a public subnet that holds a NAT gateway. The transit gateway route tables already send workload traffic for 0.0.0.0/0 to the inspection VPC attachment and send return traffic to the correct workload attachment. Every packet that a workload VPC sends to the internet must pass through the Network Firewall endpoint, and the return packets must pass back through the same firewall endpoint so that the stateful engine sees both directions of each flow. The workload VPCs have no internet gateway.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "In the workload VPCs, route 0.0.0.0/0 to the transit gateway. In the inspection VPC, route 0.0.0.0/0 from the transit gateway attachment subnets to the NAT gateway in the same Availability Zone, route 0.0.0.0/0 from the firewall subnets to the NAT gateway, route 0.0.0.0/0 from the public subnets to the internet gateway, and route the workload CIDR blocks from the public subnets to the transit gateway."
+      },
+      {
+        "key": "B",
+        "text": "In the workload VPCs, route 0.0.0.0/0 to the transit gateway. In the inspection VPC, route 0.0.0.0/0 from the transit gateway attachment subnets to the firewall endpoint in the same Availability Zone, route 0.0.0.0/0 from the firewall subnets to the NAT gateway, route 0.0.0.0/0 from the public subnets to the internet gateway, and route the workload CIDR blocks from the public subnets to the transit gateway."
+      },
+      {
+        "key": "C",
+        "text": "In the workload VPCs, route 0.0.0.0/0 to the transit gateway. In the inspection VPC, route 0.0.0.0/0 from the transit gateway attachment subnets to the firewall endpoint in the same Availability Zone, route 0.0.0.0/0 from the firewall subnets to the NAT gateway and the workload CIDR blocks from the firewall subnets to the transit gateway, and route 0.0.0.0/0 from the public subnets to the internet gateway and the workload CIDR blocks from the public subnets to the firewall endpoint."
+      },
+      {
+        "key": "D",
+        "text": "In the workload VPCs, route 0.0.0.0/0 to the NAT gateway in the inspection VPC and route the inspection VPC CIDR block to the transit gateway. In the inspection VPC, route 0.0.0.0/0 from the public subnets to the internet gateway, and route the workload CIDR blocks from the public subnets to the firewall endpoint that is in the same Availability Zone as the NAT gateway."
+      }
+    ],
+    "correctAnswers": [
+      "C"
+    ],
+    "explanation": "C is correct. It is the only option in which both directions cross the firewall endpoint. Outbound, the transit gateway hands the packet to the attachment subnet, whose route table sends 0.0.0.0/0 to the firewall endpoint in the same Availability Zone; the firewall subnet then sends 0.0.0.0/0 to the NAT gateway, which sends it out through the internet gateway. Inbound, the NAT gateway translates the destination back to the workload address, and the public subnet route table sends the workload CIDR blocks to the firewall endpoint again; the firewall subnet then sends the workload CIDR blocks to the transit gateway. Keeping the endpoint selection within one Availability Zone avoids cross-zone charges and keeps each flow on one firewall endpoint.\n\nA is incorrect because the transit gateway attachment subnets send 0.0.0.0/0 straight to the NAT gateway. The firewall endpoint is never in the path in either direction, so no inspection happens at all.\n\nB is incorrect because only the outbound direction is inspected. The public subnets send the workload CIDR blocks directly to the transit gateway, so the return packets bypass the firewall. The stateful engine sees only half of each flow and drops the traffic as out of state.\n\nD is incorrect because a route table entry can only target a NAT gateway that is in the same VPC. A workload VPC cannot route to the NAT gateway in the inspection VPC, so the route cannot be created and the design does not work.",
+    "tags": [
+      "AWS Network Firewall",
+      "centralized inspection",
+      "transit gateway",
+      "route tables"
+    ]
+  },
+  {
+    "id": "01eab3c510c6",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company runs a three-tier application. The web and application tiers run on Amazon EC2 instances in an Auto Scaling group in VPC A, which is owned by account 111122223333. The database tier runs on an Amazon RDS for MySQL Multi-AZ DB instance in VPC B, which is owned by account 444455556666. Both VPCs are in the ap-southeast-2 Region, their CIDR blocks do not overlap, and the two VPCs have no network connection to each other today. The networking team has reserved the existing transit gateway for on-premises connectivity and will not accept new attachments to it. The security team requires that the database security group allow inbound TCP port 3306 only from the application tier, and the rule must not have to be edited when the Auto Scaling group launches or terminates instances or when a new subnet is added to VPC A.\n\nWhich solution will meet these requirements with the LEAST operational overhead?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Add an inbound rule for TCP port 3306 to the database security group that references the application tier security group ID and account 111122223333. Do not create a connection between the two VPCs, because a security group reference is evaluated by the security group engine rather than by the network path."
+      },
+      {
+        "key": "B",
+        "text": "Create a VPC peering connection between VPC A and VPC B, accept it, and add routes for the peer CIDR blocks. Create a customer-managed prefix list in account 444455556666 that contains the private IPv4 address of each application tier instance, reference the prefix list in the database security group rule for TCP port 3306, and update the prefix list from Auto Scaling lifecycle events with an Amazon EventBridge rule and an AWS Lambda function."
+      },
+      {
+        "key": "C",
+        "text": "Create a VPC peering connection between VPC A and VPC B, accept it, and add routes for the peer CIDR blocks. Create a network ACL for the database subnets that has allow rules for TCP port 3306 from each subnet CIDR block in VPC A and a deny rule for all other traffic, associate it with the database subnets, and remove the inbound rules from the database security group."
+      },
+      {
+        "key": "D",
+        "text": "Create a VPC peering connection between VPC A and VPC B, accept it in account 444455556666, and add routes for the peer CIDR blocks. Then add an inbound rule for TCP port 3306 to the database security group that references the application tier security group ID in account 111122223333."
+      }
+    ],
+    "correctAnswers": [
+      "D"
+    ],
+    "explanation": "D is correct. A security group rule can reference a security group in another VPC when the two VPCs are connected by a VPC peering connection and are in the same Region, and the reference works across accounts when the peer account ID is supplied with the group ID. Both VPCs are in ap-southeast-2 and their CIDR blocks do not overlap, so the peering connection can be created and accepted and routes added. After that, membership of the referenced group changes automatically as the Auto Scaling group scales and as subnets are added, so the rule is never edited again.\n\nA is incorrect because a cross-VPC security group reference is not a substitute for connectivity. The reference can only be created once the VPCs are connected, and even if the rule existed there would be no route between VPC A and VPC B, so no packet would ever arrive at the database.\n\nB is incorrect because it carries the most ongoing work of any option. An EventBridge and Lambda pipeline has to be built, monitored, and kept correct, prefix list entry quotas and versioning become an operational concern, and a missed or throttled lifecycle event silently breaks connectivity or leaves a stale address allowed.\n\nC is incorrect because network ACLs cannot reference security groups; they match CIDR blocks, so a new subnet in VPC A requires a new rule. Network ACLs are also stateless, so the rule set would need ephemeral port entries for the return traffic, and removing the security group inbound rules would block the traffic outright.",
+    "tags": [
+      "security groups",
+      "VPC peering",
+      "cross-account",
+      "referenced security group"
+    ]
+  },
+  {
+    "id": "638941a9cdf0",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "An application runs on Amazon EC2 instances in the private subnets of a VPC. The instances download packages from a public software repository over TCP port 443 through a NAT gateway in the public subnets. The public subnets use the default network ACL, which allows all inbound and outbound traffic. A network engineer replaced the default network ACL on the private subnets with a custom network ACL that contains one inbound rule allowing TCP port 443 from 0.0.0.0/0, one outbound rule allowing TCP port 443 to 0.0.0.0/0, and the implicit deny rules. The security groups on the instances allow all outbound traffic and no inbound traffic. After the change, every download from the instances times out, although the instances can still reach other instances in the same subnet. The engineer must keep the network ACL as restrictive as possible.\n\nWhich solution will resolve the issue?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Add an inbound rule to the private subnet network ACL that allows TCP traffic on the ephemeral port range 1024 through 65535 from 0.0.0.0/0, because the responses from the repository arrive with the instance's ephemeral port as the destination port."
+      },
+      {
+        "key": "B",
+        "text": "Add an inbound rule to the private subnet network ACL that allows TCP traffic on the ephemeral port range 1024 through 65535 from the Elastic IP address of the NAT gateway, because the NAT gateway rewrites the source address of the responses before it forwards them."
+      },
+      {
+        "key": "C",
+        "text": "Add an outbound rule to the private subnet network ACL that allows TCP traffic on the ephemeral port range 1024 through 65535 to 0.0.0.0/0, because the instances send their requests from ephemeral source ports, and leave the existing inbound rule unchanged."
+      },
+      {
+        "key": "D",
+        "text": "Add an inbound rule to the security groups of the instances that allows TCP traffic on the ephemeral port range 1024 through 65535 from 0.0.0.0/0, because the responses from the repository must be allowed back in, and leave the network ACL as it is."
+      }
+    ],
+    "correctAnswers": [
+      "A"
+    ],
+    "explanation": "A is correct. Network ACLs are stateless, so the response to an outbound connection is evaluated against the inbound rules as an independent packet. When an instance opens a connection to TCP port 443 on the repository, the response arrives with a source port of 443 and a destination port equal to the ephemeral port that the instance chose. Nothing in the current inbound rule set matches a destination port in the ephemeral range, so the responses are denied and the download times out. Allowing inbound TCP 1024 through 65535 restores the return path. Traffic between instances in the same subnet still works because a network ACL does not evaluate traffic inside a subnet.\n\nB is incorrect because a NAT gateway translates only the private side of a connection. The response packets keep the repository's public IP address as their source address, so a rule that allows only the NAT gateway's Elastic IP address matches nothing and the timeout continues.\n\nC is incorrect because the outbound direction already works. The request leaves with destination port 443, which the existing outbound rule allows, and a network ACL rule evaluates the destination port rather than the source port. Adding an outbound ephemeral rule changes nothing and widens what the instances may initiate.\n\nD is incorrect because security groups are stateful. The response to an allowed outbound connection is permitted automatically, so no inbound security group rule is required, and adding one does nothing about the network ACL evaluation that is actually dropping the packets.",
+    "tags": [
+      "network ACL",
+      "ephemeral ports",
+      "stateless filtering",
+      "NAT gateway"
+    ]
+  },
+  {
+    "id": "6868718d8449",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A healthcare technology company operates a service that receives measurements from 50,000 connected medical devices. Each device holds an X.509 client certificate that was issued by the company's private certificate authority. A regulatory assessment requires that the TLS session be established between the device and the application process itself, and that no intermediate service decrypt the traffic. The application must be able to read the subject common name and the serial number of the device certificate to authorize the request, and it must check the certificate against a certificate revocation list that the company publishes every hour. The service listens on TCP port 443 and runs on Amazon EC2 instances in an Auto Scaling group behind a load balancer in two Availability Zones.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create an Application Load Balancer with an HTTPS listener on port 443. Turn on mutual authentication in verify mode with a trust store that contains the private certificate authority certificate, and let the load balancer pass the certificate details to the targets in the X-Amzn-Mtls-Clientcert-Subject and X-Amzn-Mtls-Clientcert-Serial-Number request headers."
+      },
+      {
+        "key": "B",
+        "text": "Create a Network Load Balancer with a TLS listener on port 443 and an AWS Certificate Manager certificate. Configure the target group to use TCP on port 443 so that the load balancer decrypts the traffic and forwards it to the instances in the Auto Scaling group over the internal network."
+      },
+      {
+        "key": "C",
+        "text": "Create a Network Load Balancer with a TCP listener on port 443 that forwards to a TCP target group on port 443. Terminate the TLS session on the instances, and configure the application to require and validate the client certificate and to check the revocation list locally."
+      },
+      {
+        "key": "D",
+        "text": "Create an Amazon API Gateway regional REST API with a custom domain name, turn on mutual TLS, and store the trust store bundle in an Amazon S3 bucket. Configure a VPC link so that the API forwards requests to the load balancer in front of the instances in the Auto Scaling group."
+      }
+    ],
+    "correctAnswers": [
+      "C"
+    ],
+    "explanation": "C is correct. A Network Load Balancer with a TCP listener is a pure Layer 4 forwarder. It never participates in the TLS handshake, so the session is negotiated end to end between the device and the application process, the traffic is never decrypted in the middle, and the application itself receives the full client certificate chain. That lets the application read the subject common name and serial number and check the hourly revocation list with whatever logic it needs.\n\nA is incorrect because an Application Load Balancer with mutual authentication in verify mode does validate the client certificate against the trust store, but it terminates the TLS session to do so. The traffic is decrypted at the load balancer, which the assessment forbids, and the application receives only the header fields that the load balancer chooses to forward rather than the session itself.\n\nB is incorrect because a Network Load Balancer TLS listener terminates TLS on the load balancer and, with a TCP target group, forwards the decrypted traffic to the targets in cleartext. The session ends at an intermediate service, and a TLS listener does not request or validate a client certificate at all.\n\nD is incorrect because API Gateway mutual TLS terminates the TLS session at API Gateway. The device's TLS session ends at the API endpoint rather than at the application process, so the no-decryption requirement is violated, and the trust store is only used for validation at that boundary.",
+    "tags": [
+      "NLB",
+      "mTLS",
+      "TLS passthrough",
+      "ALB mutual authentication"
+    ]
+  },
+  {
+    "id": "5ff413a90cc6",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company runs 120 microservices on Amazon EKS clusters in three AWS accounts. The services address one another by names in the private hosted zone svc.internal, which is not resolvable or registrable on the public internet. A new standard requires mutual TLS between every pair of services, so each service needs its own certificate and private key inside its Pods. Certificates must be valid for no more than 30 days and must be replaced automatically before they expire. Each service must have a distinct identity so that a compromised Pod cannot impersonate another service. A single team in the security account must own the certificate authority hierarchy and must be able to revoke an individual service certificate.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create a root certificate authority on an Amazon EC2 instance with OpenSSL and store the private key in AWS Secrets Manager. Use an AWS Systems Manager document on a schedule to sign a 30-day certificate for each service and to copy the certificate and the private key into the Pods of that service."
+      },
+      {
+        "key": "B",
+        "text": "In the security account, create a root certificate authority and a subordinate certificate authority in AWS Private CA. Share the subordinate authority with the workload accounts by using AWS Resource Access Manager. Install cert-manager with the AWS Private CA issuer in each cluster so that every service requests and renews its own certificate."
+      },
+      {
+        "key": "C",
+        "text": "Request a public certificate from AWS Certificate Manager for each service name in svc.internal, complete DNS validation for each name, and export the certificate and the private key into the corresponding Pods with a scheduled job that repeats the export after each renewal."
+      },
+      {
+        "key": "D",
+        "text": "In the security account, create a certificate authority in AWS Private CA and issue one wildcard certificate for *.svc.internal that is valid for 30 days. Store the certificate and the private key in AWS Secrets Manager, share the secret with the workload accounts, and mount the secret into every Pod."
+      }
+    ],
+    "correctAnswers": [
+      "B"
+    ],
+    "explanation": "B is correct. AWS Private CA gives the security account ownership of the hierarchy, and a subordinate certificate authority can be shared to the workload accounts with AWS Resource Access Manager so that no private key ever leaves the service. The AWS Private CA issuer for cert-manager lets each workload request a certificate for its own name and have it reissued automatically well before the 30-day lifetime expires, which gives every service a distinct identity, and the security team can revoke any single certificate through AWS Private CA.\n\nA is incorrect because it puts a root private key on an instance and makes the security team responsible for signing, distribution, expiry tracking, and revocation infrastructure for 120 services on a 30-day cycle. A scheduled copy is not tied to the actual expiry of each certificate, so certificates will lapse.\n\nC is incorrect because a publicly trusted certificate authority will only issue a certificate for a name whose control can be proved on the public internet. The svc.internal names are not publicly resolvable, so DNS validation cannot be completed and no public certificate can be issued for them.\n\nD is incorrect because one shared wildcard certificate and key gives all 120 services the same identity. Any compromised Pod can impersonate every other service, and revoking that certificate revokes it for the whole fleet rather than for one service.",
+    "tags": [
+      "AWS Private CA",
+      "mTLS",
+      "EKS",
+      "AWS RAM",
+      "certificate lifecycle"
+    ]
+  },
+  {
+    "id": "7e4b8c0b2043",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "An investigation showed that malware on an Amazon EC2 instance was tunneling data out of a VPC inside DNS TXT queries for subdomains of a domain that the attacker controlled. The instance used the Amazon-provided DNS server in its VPC. The company has 210 VPCs in 90 accounts in an organization in AWS Organizations. The security team must block resolution of domains that appear on threat intelligence lists in every VPC, must be able to see which instance asked for a blocked domain, and must own the rules in a single security account without asking the workload teams to author or copy rules. The team does not want to build or maintain the threat intelligence lists itself.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Deploy AWS Network Firewall in each of the 210 VPCs with a stateful rule group that has a domain list containing the malicious domains, route all traffic from the workload subnets through the firewall endpoints so that queries to those domains are dropped before they leave the VPC, and send the firewall alert logs to the security account."
+      },
+      {
+        "key": "B",
+        "text": "Create security group rules and network ACL rules in every VPC that deny outbound UDP and TCP port 53 traffic to any destination except an approved list of resolver addresses, and turn on VPC flow logs so that the security team can see the denied traffic."
+      },
+      {
+        "key": "C",
+        "text": "Turn on Amazon Route 53 Resolver query logging in every VPC, send the logs to an Amazon CloudWatch Logs log group in the security account, and create a metric filter and an alarm that notify the security team whenever a query matches a known malicious domain."
+      },
+      {
+        "key": "D",
+        "text": "In the security account, create an Amazon Route 53 Resolver DNS Firewall rule group that references the AWS managed domain lists with the action set to block, share the rule group with the organization by using AWS Resource Access Manager, associate it with every VPC, and turn on Resolver query logging."
+      }
+    ],
+    "correctAnswers": [
+      "D"
+    ],
+    "explanation": "D is correct. Route 53 Resolver DNS Firewall inspects queries that VPC resources send to the Amazon-provided resolver, which is exactly the path the malware used, and the AWS managed domain lists are curated and updated by AWS so the team does not maintain them. A rule group is a shareable resource, so the security account can author it once, share it to the organization with AWS Resource Access Manager, and associate it with all 210 VPCs. Resolver query logs record the query name, the firewall action, and the source instance ID, which identifies the instance that asked.\n\nA is incorrect because the malware queries the Amazon-provided resolver inside the VPC. Those queries are answered by the VPC resolver at the link-local address and are not routed to a firewall endpoint, so Network Firewall never sees them. It would also mean deploying and maintaining a firewall and rule group in 210 VPCs.\n\nB is incorrect because the destination is the VPC resolver rather than an external resolver, so a rule about outbound port 53 to other destinations does not stop this exfiltration. Neither security groups nor network ACLs can distinguish one domain name from another.\n\nC is incorrect because query logging is purely detective. The queries still resolve and the data still leaves, and the team would also have to build and maintain its own list of malicious domains inside metric filters.",
+    "tags": [
+      "Route 53 Resolver DNS Firewall",
+      "DNS exfiltration",
+      "AWS RAM",
+      "managed domain lists"
+    ]
+  },
+  {
+    "id": "6d9c904e6135",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company operates a shared services VPC in its networking account. The VPC contains interface VPC endpoints for AWS Secrets Manager and AWS Systems Manager. Workload VPCs in 60 member accounts reach these endpoints over a transit gateway, and a Route 53 private hosted zone resolves the service names to the endpoint addresses. During a review, the security team found that any IAM principal that presents valid credentials for the Secrets Manager API can retrieve secrets through the interface endpoint if the request reaches the endpoint, including a principal that belongs to an AWS account outside the company's organization. The team must ensure that the endpoint can be used only by principals that belong to the organization.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Attach a VPC endpoint policy to each interface endpoint that allows the required actions only when the aws:PrincipalOrgID condition key matches the organization ID and that denies every other request. Keep the endpoint security group unchanged so that the workload VPCs can still reach the endpoint on TCP port 443."
+      },
+      {
+        "key": "B",
+        "text": "Modify the security group that is attached to the endpoint network interfaces so that it allows inbound TCP port 443 only from the CIDR blocks of the 60 workload VPCs, remove the rule that allows the whole address range that is reachable through the transit gateway, and record the change in the security team configuration baseline."
+      },
+      {
+        "key": "C",
+        "text": "Create a service control policy in AWS Organizations that denies the secretsmanager and ssm actions unless the aws:PrincipalOrgID condition key matches the organization ID, and attach the policy to the organization root so that every request that reaches the endpoint is evaluated against it."
+      },
+      {
+        "key": "D",
+        "text": "Remove the Route 53 private hosted zone, turn on private DNS on the interface endpoints, and associate the endpoints only with the VPCs of the 60 member accounts so that only those accounts are able to resolve the endpoint service names to the private addresses."
+      }
+    ],
+    "correctAnswers": [
+      "A"
+    ],
+    "explanation": "A is correct. A VPC endpoint policy is a resource policy that AWS evaluates for every request that passes through the endpoint, and it can inspect the identity of the caller. A condition on aws:PrincipalOrgID limits the endpoint to principals that belong to the organization, so credentials from an account outside the organization are rejected at the endpoint even when the request arrives from an allowed VPC. The security group still controls network reachability, which is a separate concern.\n\nB is incorrect because a security group evaluates only addresses, protocols, and ports. It has no knowledge of the requesting principal, so credentials that belong to an account outside the organization still succeed as long as the request comes from one of the allowed VPC CIDR blocks.\n\nC is incorrect because a service control policy applies only to principals in accounts that belong to the organization. It can never restrict a principal in an account outside the organization, which is precisely the case the security team found.\n\nD is incorrect because name resolution is not authorization. A caller that knows the private IP address of an endpoint network interface, or that uses the endpoint-specific regional DNS name, can still send the request, and the endpoint will serve it.",
+    "tags": [
+      "VPC endpoint policy",
+      "aws:PrincipalOrgID",
+      "PrivateLink",
+      "AWS Organizations"
+    ]
+  },
+  {
+    "id": "431c118682c5",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company stores clinical documents in an Amazon S3 bucket. An auditor requires that the objects be retrievable only from Amazon EC2 instances in one specific VPC, and that a request that carries valid credentials but originates anywhere else, including from the internet and from other VPCs in the same account, must fail. The VPC has no internet gateway and no NAT gateway. A break-glass administrator role in the account must keep full access to the bucket from the AWS Management Console so that the bucket policy can be repaired if it is misconfigured. The company wants to avoid changing the application, which addresses the bucket by its regional endpoint name.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create a gateway VPC endpoint for Amazon S3 in the VPC, add the endpoint to the route tables of the private subnets, and add a bucket policy that denies all actions when the aws:SourceIp condition key does not match the CIDR block of the VPC, with an exception for the break-glass role."
+      },
+      {
+        "key": "B",
+        "text": "Turn on S3 Block Public Access for the bucket and for the account, disable all bucket ACLs, and add a bucket policy that allows the S3 actions only for the IAM roles that the EC2 instances in the VPC use, with an exception for the break-glass administrator role."
+      },
+      {
+        "key": "C",
+        "text": "Create a gateway VPC endpoint for Amazon S3 in the VPC, add the endpoint to the route tables of the private subnets, and attach an endpoint policy to the endpoint that allows the S3 actions only on that bucket, with an exception for the break-glass role."
+      },
+      {
+        "key": "D",
+        "text": "Create a gateway VPC endpoint for Amazon S3 in the VPC, add the endpoint to the route tables of the private subnets, and add a bucket policy that denies all actions when the aws:SourceVpce condition key does not match the endpoint ID, with an exception for the break-glass role."
+      }
+    ],
+    "correctAnswers": [
+      "D"
+    ],
+    "explanation": "D is correct. A gateway VPC endpoint gives the private subnets a path to Amazon S3 without an internet gateway or a NAT gateway, and the application keeps using the regional endpoint name. A bucket policy that denies every action when aws:SourceVpce does not equal the endpoint ID makes the endpoint the only usable path, so a request from the internet or from another VPC fails even with valid credentials. The exception for the break-glass role keeps a way to repair the policy.\n\nA is incorrect because aws:SourceIp is not usable for requests that arrive through a VPC endpoint. AWS does not evaluate the private source address against that key for endpoint traffic, so the deny statement would match every request and lock everyone out of the bucket.\n\nB is incorrect because it is an identity restriction rather than a network restriction. Block Public Access and an allow list of roles do nothing to stop those same role credentials from being used from a laptop or from another VPC, which is the scenario the auditor cares about.\n\nC is incorrect because an endpoint policy only governs what can be done through that endpoint. It places no restriction on requests that reach the bucket by any other path, so the bucket remains accessible from the internet to anyone who holds valid credentials.",
+    "tags": [
+      "S3 gateway endpoint",
+      "bucket policy",
+      "aws:SourceVpce",
+      "data perimeter"
+    ]
+  },
+  {
+    "id": "893f849ac2ce",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company has an OU in AWS Organizations that contains 35 accounts for workloads that handle cardholder data. The VPCs in these accounts must reach the internet only through a central inspection VPC that is attached to a transit gateway. An audit found that engineers in two of the accounts had created an internet gateway and attached it to a VPC to work around a proxy problem. The company must make it impossible for anyone in these accounts to create or attach an internet gateway, including the account root user and any administrator role, and the control must apply automatically to accounts that are moved into the OU later. The control must prevent the action rather than detect it afterward, and the company does not want to create a new IAM resource in each account.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create an AWS Config organization managed rule that checks whether a VPC has an attached internet gateway, and configure automatic remediation with an AWS Systems Manager Automation runbook that detaches and deletes any internet gateway that the rule finds in the 35 accounts."
+      },
+      {
+        "key": "B",
+        "text": "Create an IAM permissions boundary that denies the ec2:CreateInternetGateway and ec2:AttachInternetGateway actions, attach the boundary to every IAM role and IAM user in the 35 accounts including the administrator roles, and require that the boundary be attached to any principal that is created later."
+      },
+      {
+        "key": "C",
+        "text": "Create a service control policy that denies the ec2:CreateInternetGateway and ec2:AttachInternetGateway actions for all principals, and attach the policy to the OU that contains the 35 accounts so that every account that is in the OU now or later inherits the policy."
+      },
+      {
+        "key": "D",
+        "text": "Create an AWS Firewall Manager policy in the delegated administrator account that is scoped to the OU and that removes an internet gateway from any VPC that is not the inspection VPC, and turn on automatic remediation so that Firewall Manager enforces the configuration continuously."
+      }
+    ],
+    "correctAnswers": [
+      "C"
+    ],
+    "explanation": "C is correct. A service control policy is a preventive guardrail. It sets the maximum available permissions for every principal in the affected accounts, including the account root user and any administrator role, and an account inherits the policies of the OU that it is placed in, so accounts that are moved into the OU later are covered with no extra work. Denying ec2:CreateInternetGateway and ec2:AttachInternetGateway means the API call fails rather than being cleaned up later, and no IAM resource is created in the member accounts.\n\nA is incorrect because AWS Config is detective. The internet gateway is created and attached, and traffic can bypass the inspection VPC in the window before evaluation and remediation complete. The requirement is to prevent the action.\n\nB is incorrect because a permissions boundary only constrains the principals it is attached to, and it does not apply to the account root user at all. Any role that is created without the boundary is unconstrained, so the control depends on continuous vigilance and it adds an IAM resource to each account.\n\nD is incorrect because AWS Firewall Manager manages security groups, AWS WAF, AWS Shield Advanced, AWS Network Firewall, and Route 53 Resolver DNS Firewall configurations. It has no policy type that governs internet gateways, so this policy cannot be created.",
+    "tags": [
+      "service control policy",
+      "AWS Organizations",
+      "internet gateway",
+      "preventive control"
+    ]
+  },
+  {
+    "id": "c15edff9676a",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "multiple",
+    "stem": "A company has 140 accounts in an organization in AWS Organizations, with a total of 190 VPCs across four Regions. The security team must collect network flow records for every elastic network interface in every VPC, including traffic between instances inside the same VPC, and must store a single copy of the records in one Amazon S3 bucket in a dedicated security account so that the team can query them with Amazon Athena. The records must be delivered directly to the bucket without passing through Amazon CloudWatch Logs. The solution must cover accounts that join the organization later without any manual work in the member accounts.\n\nWhich two actions should the company take? (Choose two.)",
+    "options": [
+      {
+        "key": "A",
+        "text": "In every member account, create an S3 bucket, send that account's VPC flow logs to the local bucket, and configure S3 Cross-Region Replication on each bucket so that the objects are copied into the bucket in the security account."
+      },
+      {
+        "key": "B",
+        "text": "In the security account, create the S3 bucket and attach a bucket policy that allows delivery.logs.amazonaws.com to call s3:PutObject and s3:GetBucketAcl on the bucket, with conditions that restrict the request to the company's organization."
+      },
+      {
+        "key": "C",
+        "text": "Turn on transit gateway flow logs on the transit gateway and on each of its attachments in the networking account, and set the destination to the S3 bucket in the security account so that all of the records land in one place."
+      },
+      {
+        "key": "D",
+        "text": "Create an AWS CloudFormation stack set with service-managed permissions and automatic deployment that targets the organization root in the four Regions, and have the stack create a VPC flow log for each VPC with a destination type of s3 and the security account bucket as the destination."
+      },
+      {
+        "key": "E",
+        "text": "In the organization management account, turn on trusted access for vpc-flow-logs.amazonaws.com so that AWS Organizations creates an organization-wide flow log that delivers the records for every VPC in every account to the bucket in the security account."
+      }
+    ],
+    "correctAnswers": [
+      "B",
+      "D"
+    ],
+    "explanation": "B and D are correct. A VPC flow log that has an S3 destination is delivered by the AWS log delivery service, so the destination bucket needs a policy that allows delivery.logs.amazonaws.com to write objects and read the bucket ACL; scoping that permission with an organization condition keeps other writers out. Flow logs are per-resource and must be created in the account and Region that owns the VPC, and a service-managed stack set with automatic deployment targeted at the organization root is the way to create them in 140 accounts and four Regions and to keep creating them as accounts join.\n\nA is incorrect because it produces two copies of every record, adds replication cost and delay, and requires a bucket and a replication configuration in every account. The requirement is a single copy in one bucket.\n\nC is incorrect because transit gateway flow logs only describe traffic that traverses the transit gateway. Traffic between instances inside a VPC and traffic that leaves through a local internet gateway or NAT gateway never appears, so the elastic network interface coverage requirement is not met.\n\nE is incorrect because there is no organization-wide flow log. Unlike AWS CloudTrail, VPC Flow Logs has no trusted access integration with AWS Organizations that creates flow logs on behalf of member accounts, so this cannot be turned on.",
+    "tags": [
+      "VPC Flow Logs",
+      "AWS Organizations",
+      "CloudFormation StackSets",
+      "centralized logging"
+    ]
+  },
+  {
+    "id": "383bcddb0db3",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A retail company's public website runs behind an internet-facing Application Load Balancer. During a promotion, the site became unavailable. The Application Load Balancer access logs show that roughly 40 source IP addresses each sent between 3,000 and 5,000 HTTP POST requests per minute to the /login path, which is expensive because each request performs a password hash. Legitimate customers send fewer than 100 requests per minute. Network-layer metrics were normal throughout the event, and no volumetric packet flood was observed. The company must block this pattern automatically within minutes of it starting, must not affect requests to other paths, and has decided not to take on the annual subscription commitment of AWS Shield Advanced.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Subscribe to AWS Shield Advanced, add the Application Load Balancer as a protected resource, turn on automatic application layer DDoS mitigation so that Shield Advanced creates and tunes AWS WAF rules during an event, and engage the Shield Response Team if the attack continues."
+      },
+      {
+        "key": "B",
+        "text": "Create an AWS WAF web ACL, add a rate-based rule that aggregates on the source IP address with a limit of 1,000 requests per five-minute window and a scope-down statement that matches only the /login path, and associate the web ACL with the Application Load Balancer."
+      },
+      {
+        "key": "C",
+        "text": "Create an AWS Lambda function that reads the Application Load Balancer access logs from Amazon S3 every minute, identifies the source IP addresses that exceed a request threshold, adds deny entries for those addresses to the network ACLs of the load balancer subnets, and removes those entries again after one hour."
+      },
+      {
+        "key": "D",
+        "text": "Increase the maximum size of the Auto Scaling group behind the load balancer, turn on slow start on the target group, and add a target tracking scaling policy on the RequestCountPerTarget metric so that the fleet absorbs the additional requests and the login path stays available."
+      }
+    ],
+    "correctAnswers": [
+      "B"
+    ],
+    "explanation": "B is correct. The evidence describes an application layer request flood, not a volumetric attack, and an AWS WAF rate-based rule is the native control for it. The rule counts requests per source IP address over a sliding five-minute window and blocks a source that exceeds the limit, and a scope-down statement restricts the counting and the blocking to the /login path so that other paths are untouched. A legitimate customer sends fewer than 500 requests in a five-minute window while each attacking address sends at least 15,000, so a limit of 1,000 separates them cleanly, and the rule takes effect on its own within a couple of minutes.\n\nA is incorrect because it violates a stated constraint. The company has decided against the Shield Advanced subscription, and Shield Advanced adds nothing at the network layer here because the network-layer metrics were normal; its application layer mitigation works by creating the same kind of AWS WAF rate-based rules that are available without a subscription.\n\nC is incorrect because Application Load Balancer access logs are delivered on a five-minute or 60-minute interval, so a function that runs every minute cannot react any faster than log delivery. A network ACL also has a small rule quota, and an attacker that rotates addresses exhausts it quickly.\n\nD is incorrect because scaling absorbs the load rather than blocking it. The company pays for the attack traffic, the password hashing cost per request still applies, and nothing prevents the attacker from raising the rate further.",
+    "tags": [
+      "AWS WAF",
+      "rate-based rule",
+      "Shield Advanced",
+      "ALB",
+      "application layer DDoS"
+    ]
+  },
+  {
+    "id": "37feb158d7f4",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company's customer portal is served by an internet-facing Application Load Balancer with an HTTPS listener on port 443 that uses an AWS Certificate Manager certificate. A quarterly compliance scan of the load balancer's DNS name reported two findings: the endpoint negotiates TLS 1.0 and TLS 1.1, and it offers cipher suites that use CBC mode with SHA-1. The scan also confirmed that the endpoint must continue to support TLS 1.2 clients, because 4 percent of customers use them. The company must remediate both findings on the load balancer endpoint itself, and the fix must not add a new service to the architecture and must not require any change to the applications on the target instances.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Change the security policy on the HTTPS listener of the Application Load Balancer to ELBSecurityPolicy-TLS13-1-2-2021-06, which negotiates only TLS 1.3 and TLS 1.2 with modern cipher suites, and then rescan the load balancer's DNS name to confirm the change."
+      },
+      {
+        "key": "B",
+        "text": "Modify the security group that is attached to the Application Load Balancer so that it allows inbound traffic only on TCP port 443, and delete the HTTP listener on port 80 and its redirect rule so that clients cannot negotiate a weak protocol version."
+      },
+      {
+        "key": "C",
+        "text": "Set the allowed TLS protocol versions and the cipher list in the web server configuration on the target instances, rebuild the Amazon Machine Image and the launch template so that every new instance carries the hardened configuration, and then recycle the Auto Scaling group."
+      },
+      {
+        "key": "D",
+        "text": "Create an Amazon CloudFront distribution in front of the Application Load Balancer, set the security policy of the distribution to TLSv1.2_2021, point the portal's DNS record at the distribution, and leave the listener configuration on the load balancer unchanged."
+      }
+    ],
+    "correctAnswers": [
+      "A"
+    ],
+    "explanation": "A is correct. An Application Load Balancer terminates the client TLS session, and the set of protocol versions and cipher suites that it will negotiate is defined entirely by the security policy on the HTTPS listener. ELBSecurityPolicy-TLS13-1-2-2021-06 offers TLS 1.3 and TLS 1.2 only and excludes the older CBC and SHA-1 suites, so both findings are remediated with one change on the listener, TLS 1.2 clients continue to work, no new service is introduced, and the targets are untouched.\n\nB is incorrect because a security group filters by protocol, port, and address. It has no visibility into the TLS handshake, so it cannot influence which protocol version or cipher suite is negotiated, and removing the port 80 listener only removes the plaintext redirect.\n\nC is incorrect because the load balancer, not the target, negotiates TLS with the client. The web server configuration on the instances governs only the back-end connection between the load balancer and the target, so the scan of the load balancer endpoint would report the same two findings.\n\nD is incorrect because it adds a service, which the requirement forbids, and it does not fix the finding. The load balancer keeps its own public DNS name and stays directly reachable, so a scan of that endpoint still negotiates TLS 1.0 and TLS 1.1.",
+    "tags": [
+      "ALB",
+      "TLS security policy",
+      "compliance scanning",
+      "encryption in transit"
+    ]
+  },
+  {
+    "id": "c2cdd2cbf35f",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "Amazon GuardDuty raised a Backdoor:EC2/C&CActivity.B!DNS finding for an Amazon EC2 instance that belongs to an Auto Scaling group in a production VPC. The company's incident response standard requires that a suspected compromised instance be cut off from the network within five minutes of the finding with no human in the loop, that the contents of memory and of any instance store volumes remain available for a responder to collect, that the Amazon EBS volumes be preserved for offline analysis, and that a scaling action must not terminate the instance while the investigation is open. The company wants to implement the standard as an automated response.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create an Amazon EventBridge rule that matches the finding type and that invokes an AWS Lambda function which snapshots the Amazon EBS volumes of the affected instance and then calls ec2:TerminateInstances for it, and rely on the Auto Scaling group to launch a replacement instance from the current launch template so that capacity is restored."
+      },
+      {
+        "key": "B",
+        "text": "Create an Amazon EventBridge rule that matches the finding type and that publishes the finding to an Amazon SNS topic which pages the on-call security engineer, who then isolates the instance with a quarantine security group and captures the evidence by following the documented incident response runbook."
+      },
+      {
+        "key": "C",
+        "text": "Create an Amazon EventBridge rule that matches the finding type and that invokes an AWS Lambda function which calls autoscaling:DetachInstances and then ec2:StopInstances, so that the instance is off the network while its root volume and its attached data volumes are kept for later analysis."
+      },
+      {
+        "key": "D",
+        "text": "Create an Amazon EventBridge rule that matches the finding type and that starts an AWS Systems Manager Automation runbook which detaches the instance from the Auto Scaling group, replaces its security groups with an isolation security group that contains no rules, snapshots its Amazon EBS volumes, and notifies the response team."
+      }
+    ],
+    "correctAnswers": [
+      "D"
+    ],
+    "explanation": "D is correct. It satisfies every clause of the standard. EventBridge delivers GuardDuty findings within moments, so the runbook starts automatically and needs no human. Replacing the security groups with a group that contains no rules cuts the instance off from the network while leaving it running, so memory and instance store contents survive for a responder. EBS snapshots preserve the disks for offline analysis, and detaching the instance from the Auto Scaling group prevents a scaling action from terminating it while the investigation is open.\n\nA is incorrect because terminating the instance destroys the volatile evidence. The snapshots preserve the disks, but the contents of memory and of any instance store volumes are lost the moment the instance stops running, and the replacement instance is built from the same image, so the root cause is neither collected nor addressed.\n\nB is incorrect because it depends on a person. The standard explicitly requires isolation within five minutes with no human in the loop, and a page cannot guarantee that, particularly outside business hours.\n\nC is incorrect because stopping an instance discards the contents of memory and of any instance store volumes, which the standard requires be preserved. Isolating the instance with a security group achieves the same network cutoff without losing that volatile evidence.",
+    "tags": [
+      "GuardDuty",
+      "EventBridge",
+      "incident response",
+      "Systems Manager Automation",
+      "forensics"
+    ]
+  },
+  {
+    "id": "638a6422d9bd",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "multiple",
+    "stem": "A company has 120 accounts in an organization in AWS Organizations. AWS Config is already turned on in every account and Region. The security team maintains a baseline security group that permits only the traffic that the company's shared monitoring and patching tools need. The team must ensure that this baseline security group is present and associated with every Amazon EC2 instance and every Application Load Balancer in the accounts in two OUs, that it is applied to resources that are created later without any action by the workload teams, and that resources which do not have it are reported and corrected automatically. The security team's own account must own the configuration, and the organization management account must not be used for day-to-day work.\n\nWhich two actions should the security team take? (Choose two.)",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create an AWS Config aggregator in the security team's account, enable the restricted-ssh and vpc-sg-open-only-to-authorized-ports managed rules in every account in the two OUs, and review the aggregated compliance dashboard every day."
+      },
+      {
+        "key": "B",
+        "text": "Create an AWS CloudFormation stack set that targets the two OUs and that creates a copy of the baseline security group in every VPC in every account, and turn on automatic deployment so that the stack set also reaches accounts that are added later."
+      },
+      {
+        "key": "C",
+        "text": "In the organization management account, enable trusted access for AWS Firewall Manager and set the security team's account as the Firewall Manager delegated administrator account for the organization."
+      },
+      {
+        "key": "D",
+        "text": "Create a service control policy that denies the ec2:AuthorizeSecurityGroupIngress action whenever the requested rule allows TCP port 22 or TCP port 3389 from 0.0.0.0/0, and attach the policy to the two OUs so that noncompliant rules cannot be created."
+      },
+      {
+        "key": "E",
+        "text": "In the Firewall Manager administrator account, create a common security group policy that uses the baseline security group as its primary security group, scope the policy to the two OUs and to Amazon EC2 instances and Application Load Balancers, and turn on automatic remediation."
+      }
+    ],
+    "correctAnswers": [
+      "C",
+      "E"
+    ],
+    "explanation": "C and E are correct. AWS Firewall Manager requires trusted access in AWS Organizations and a designated administrator account, and delegating that role to the security team's account gives the team ownership while keeping routine work out of the management account. A common security group policy then replicates the primary security group into each in-scope VPC and associates it with the in-scope Amazon EC2 instances and Application Load Balancers. Firewall Manager evaluates resources continuously, so resources that are created later are brought into scope automatically, and automatic remediation reattaches the group to any resource that is missing it.\n\nA is incorrect because AWS Config is detective. An aggregator provides organization-wide visibility and a human review cycle, but it does not attach anything, and neither of those managed rules checks whether the baseline security group is present.\n\nB is incorrect because a stack set can create the security group but nothing associates it with an instance or a load balancer. It also does nothing when someone removes the association, and it cannot report which resources are noncompliant.\n\nD is incorrect because IAM has no condition key that exposes the CIDR block or the port range inside an ec2:AuthorizeSecurityGroupIngress request, so a policy that inspects the requested rule cannot be written. A policy that denied the action outright would stop teams from managing their own security groups and still would not attach the baseline group.",
+    "tags": [
+      "AWS Firewall Manager",
+      "security group policy",
+      "delegated administrator",
+      "AWS Organizations"
+    ]
+  },
+  {
+    "id": "9e80dcf7215c",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company must satisfy a control that states that no security group in its production accounts may allow inbound TCP port 22 from any source, including from another security group and from the corporate address ranges. Operations engineers still need an interactive shell on Amazon EC2 instances in private subnets to troubleshoot incidents. Every session must be attributable to a named IAM identity, and a record of who connected to which instance, together with the commands that were run in the session, must be retained for two years. The private subnets have no route to the internet, and the company will not add one.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Deploy a bastion host in a public subnet, allow inbound TCP port 22 on the bastion only from the corporate address ranges, allow inbound TCP port 22 on the instances only from the security group of the bastion, and forward the SSH daemon logs of the bastion to Amazon CloudWatch Logs with a two-year retention period."
+      },
+      {
+        "key": "B",
+        "text": "Create an EC2 Instance Connect endpoint in each private subnet, allow inbound TCP port 22 on the instance security groups from the security group of the endpoint, grant engineers the ec2-instance-connect permissions in IAM, and rely on AWS CloudTrail records of each connection for the two-year retention requirement."
+      },
+      {
+        "key": "C",
+        "text": "Turn on AWS Systems Manager Session Manager. Attach an instance profile that has the AmazonSSMManagedInstanceCore policy, create interface VPC endpoints for ssm, ssmmessages, and ec2messages, remove all inbound rules from the instance security groups, control access with IAM policies, and stream session logs to an Amazon S3 bucket that has a two-year lifecycle policy."
+      },
+      {
+        "key": "D",
+        "text": "Use AWS Systems Manager Run Command with a set of documents that the operations team maintains, grant each engineer permission to run only those documents on the production instances, and store the command output in an Amazon S3 bucket that has a two-year lifecycle policy for the retention requirement."
+      }
+    ],
+    "correctAnswers": [
+      "C"
+    ],
+    "explanation": "C is correct. The SSM Agent opens outbound connections to the Systems Manager service, so the instance security groups need no inbound rules at all and the control is satisfied literally rather than narrowed. Interface VPC endpoints for ssm, ssmmessages, and ec2messages let the agent reach the service from subnets that have no route to the internet. Access is granted through IAM, so every session belongs to a named identity, the StartSession API call is recorded in AWS CloudTrail, and session logging streams the keystrokes and output to Amazon S3, where a lifecycle policy holds them for two years.\n\nA is incorrect because it still requires inbound TCP port 22, both on the bastion from the corporate ranges and on the instances from the bastion's security group. The control forbids inbound port 22 from any source, however narrow, so a bastion cannot satisfy it.\n\nB is incorrect for the same reason at one remove. An EC2 Instance Connect endpoint removes the need for a public subnet and a bastion, but the target instance's security group must still permit inbound TCP port 22 from the endpoint, so a noncompliant rule remains.\n\nD is incorrect because Run Command is not an interactive shell. Engineers cannot explore an unfolding incident by submitting predefined documents, and any document that exposed a generic shell would defeat the per-command record that the requirement asks for.",
+    "tags": [
+      "Session Manager",
+      "Systems Manager",
+      "interface endpoints",
+      "session logging",
+      "no inbound SSH"
+    ]
+  },
+  {
+    "id": "8c388b52e183",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A media company streams recorded lectures to paying subscribers. Each lecture is packaged as HLS, so a single title consists of roughly 4,000 small segment files and several manifests in an Amazon S3 bucket. The company serves the content through an Amazon CloudFront distribution and needs the segments to be cached at the edge, because many subscribers watch the same title at the same time. Access must be granted per subscriber for a session of eight hours, and it must cover every file under a per-title path prefix without the application signing each file individually. The S3 bucket must not be reachable except through the distribution. The security team prohibits any use of the AWS account root user.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Have the application generate an Amazon S3 presigned URL that is valid for eight hours for each segment and each manifest that a subscriber requests, return those presigned URLs to the player instead of CloudFront URLs, and configure the cache behavior to forward the query string to the origin so that the signature reaches Amazon S3."
+      },
+      {
+        "key": "B",
+        "text": "Create a CloudFront key group that contains the public key of an RSA key pair that the application holds, add the key group as a trusted key group on the cache behavior, have the application issue signed cookies with a custom policy that grants the title's path prefix for eight hours, and use origin access control for the bucket."
+      },
+      {
+        "key": "C",
+        "text": "Turn on CloudFront field-level encryption on the cache behavior with a public key for each subscriber so that only that subscriber can read the response, use origin access control so that only the distribution can read the bucket, and set the object time to live to eight hours."
+      },
+      {
+        "key": "D",
+        "text": "Add the CloudFront key pair of the AWS account root user as a trusted signer on the distribution, have the application sign each request URL with the private key of that key pair for an eight-hour expiry, use origin access control so that only the distribution can read the bucket, and store the private key in AWS Secrets Manager."
+      }
+    ],
+    "correctAnswers": [
+      "B"
+    ],
+    "explanation": "B is correct. Signed cookies are the CloudFront mechanism for granting access to many files at once: a custom policy can name a path prefix with a wildcard and an expiry time, so one Set-Cookie response covers all 4,000 segments and the manifests for eight hours. Because the entitlement travels in cookies rather than in the URL, the object URLs are identical for every subscriber, so the edge cache is shared. A key group holds the signer public key and is managed through the API and IAM with no use of the root user, and origin access control keeps the bucket private to the distribution.\n\nA is incorrect because a presigned URL is unique to each subscriber and each object. Forwarding the query string to make the signature reach Amazon S3 puts that unique value in the cache key, so nothing is shared between viewers, and the application would have to sign 4,000 objects per session, which the requirement forbids.\n\nC is incorrect because field-level encryption encrypts specified fields of data that viewers POST to the origin. It is not an authorization mechanism for GET requests and it places no restriction on who may download a segment.\n\nD is incorrect because the trusted signer model depends on a CloudFront key pair that only the account root user can create, and the security team prohibits root user use. Signing each URL individually also fails the requirement to cover a whole path prefix without per-file signing.",
+    "tags": [
+      "CloudFront",
+      "signed cookies",
+      "key groups",
+      "origin access control",
+      "edge caching"
+    ]
+  },
+  {
+    "id": "f7e6b1d6b86c",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company converted a VPC to dual stack. The private subnets now have an IPv4 CIDR block and an IPv6 /64 CIDR block, and instances receive IPv6 addresses automatically. The instances must be able to open connections to IPv6-only package repositories and IPv6-only partner APIs on the internet. Nothing on the internet may be able to open a connection to an instance, and the security team requires that the routing itself make an inbound connection impossible rather than depending on security group or network ACL rules, because IPv6 addresses that AWS assigns are globally routable and there is no IPv6 equivalent of private address space. The IPv4 path already works through a NAT gateway in the public subnets.\n\nWhich solution will meet these requirements with the LEAST operational overhead?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create an egress-only internet gateway in the VPC, add a route for ::/0 that targets the egress-only internet gateway to the route tables of the private subnets, and leave the instance security groups with no inbound IPv6 rules."
+      },
+      {
+        "key": "B",
+        "text": "Add a route for ::/0 that targets the existing NAT gateway to the route tables of the private subnets, and assign an IPv6 address to the NAT gateway so that it can translate IPv6 traffic on behalf of the instances in the private subnets."
+      },
+      {
+        "key": "C",
+        "text": "Add a route for ::/0 that targets the VPC's internet gateway to the route tables of the private subnets, and rely on the instance security groups and the subnet network ACLs to deny all inbound IPv6 traffic from the internet."
+      },
+      {
+        "key": "D",
+        "text": "Launch a fleet of NAT instances in the public subnets, enable IPv6 forwarding in the operating system, add a route for ::/0 that targets the network interfaces of those instances to the private subnet route tables, and manage the fleet with an Auto Scaling group."
+      }
+    ],
+    "correctAnswers": [
+      "A"
+    ],
+    "explanation": "A is correct. An egress-only internet gateway is the IPv6 counterpart of outbound-only internet access. It is a horizontally scaled, redundant, highly available VPC component that is stateful: it allows outbound IPv6 traffic from the VPC and the responses to it, and it prevents the internet from initiating an IPv6 connection to the instances. Because the restriction is a property of the gateway rather than of a filter rule, the security team's requirement that routing enforce it is met, and there is nothing to operate.\n\nB is incorrect because a NAT gateway is an IPv4 device. It cannot be assigned an IPv6 address, and its only IPv6 capability is NAT64, which reaches IPv4-only destinations through the well-known prefix 64:ff9b::/96 and requires DNS64. It cannot provide a general egress path to an IPv6-only destination.\n\nC is incorrect because a route to the internet gateway makes the globally routable IPv6 addresses reachable in both directions. The only thing left between the internet and the instance is filter configuration, which is exactly the dependency that the security team requires the design to avoid.\n\nD is incorrect on operational overhead. Self-managed NAT instances can forward IPv6, but the company would own the image, patching, source and destination check settings, failover behavior, and throughput scaling, all of which an egress-only internet gateway provides as a managed component.",
+    "tags": [
+      "IPv6",
+      "egress-only internet gateway",
+      "NAT gateway",
+      "dual stack"
+    ]
+  },
+  {
+    "id": "bf6445a52d2d",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A financial services company must inspect the contents of outbound HTTPS requests that its Amazon EC2 instances send to the internet, so that a data loss prevention rule set can detect account numbers in the request bodies and block those requests. Filtering by the domain name in the TLS handshake is not sufficient, because the assessors require that the payload be examined. All egress already passes through an AWS Network Firewall firewall in a central inspection VPC. The company operates its own certificate authority on premises and can export a subordinate certificate authority certificate together with its private key. It manages the trust store of every instance with AWS Systems Manager. The solution must not require an agent on the instances and must not require changes to the applications.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Add a stateful rule group to the firewall policy with rules that match the Server Name Indication field of the TLS handshake, and set the rules to drop the connection when the destination is not on the approved list so that the data loss prevention team can review the alerts."
+      },
+      {
+        "key": "B",
+        "text": "Turn on Amazon GuardDuty in all accounts and associate a Route 53 Resolver DNS Firewall rule group with the VPCs, then send the findings and the blocked query logs to the data loss prevention team so that the team can review the outbound requests and block the offenders."
+      },
+      {
+        "key": "C",
+        "text": "Deploy a fleet of HTTP proxy servers in the inspection VPC, configure the instances to send all of their requests to the proxy fleet, and analyze the CONNECT requests and the proxy access logs with the data loss prevention rule set so that requests with account numbers are dropped."
+      },
+      {
+        "key": "D",
+        "text": "Import the subordinate certificate authority certificate and its private key into AWS Certificate Manager, create a TLS inspection configuration in AWS Network Firewall that references the imported certificate for outbound inspection, associate the configuration with the firewall policy, distribute the certificate authority certificate to the instance trust stores, and write stateful rules that match the decrypted payload."
+      }
+    ],
+    "correctAnswers": [
+      "D"
+    ],
+    "explanation": "D is correct. Outbound TLS inspection in AWS Network Firewall decrypts the session, hands the cleartext to the stateful engine so that rules can match on the request body, and re-encrypts the traffic before forwarding it. Network Firewall generates the server certificate that it presents to the client from a certificate authority certificate that must be imported into AWS Certificate Manager together with its private key, which is why the company exports the subordinate authority from its own certificate authority. Every client must trust that authority, and Systems Manager already manages the instance trust stores, so nothing is installed on the instances and the applications are unchanged.\n\nA is incorrect because Server Name Indication appears in the cleartext part of the handshake and identifies only the destination host name. Matching on it filters by destination and never exposes the request body, which is the specific thing the assessors require.\n\nB is incorrect because neither service reads an HTTPS payload. Amazon GuardDuty analyses metadata such as flow logs, DNS query logs, and CloudTrail events, and DNS Firewall evaluates query names, so neither one can detect an account number in a request body or block that request.\n\nC is incorrect because a client that uses an HTTP proxy for an HTTPS destination issues a CONNECT request and the proxy then relays encrypted bytes; the access log records the host and port only. Reading the payload would require the proxy to terminate TLS with its own authority, which is the same decryption approach as the correct answer but with a self-managed fleet, and it also requires configuring proxy settings on the instances.",
+    "tags": [
+      "AWS Network Firewall",
+      "TLS inspection",
+      "AWS Certificate Manager",
+      "data loss prevention"
+    ]
+  },
+  {
+    "id": "e1a4ae53aca9",
+    "certificationId": "aws-ans",
+    "domain": "Network Security, Compliance, and Governance",
+    "difficulty": "professional",
+    "type": "multiple",
+    "stem": "A company must run a third-party intrusion detection and prevention appliance in line with all traffic that flows between 30 spoke VPCs that are attached to a transit gateway in one Region. The appliance must be able to drop malicious packets rather than only report on them, and it must see the original source and destination addresses of the traffic. The appliance vendor supports GENEVE encapsulation. The appliances are stateful, so both directions of every flow must reach the same appliance, and flows between instances that are in different Availability Zones must not break. The appliance fleet must scale horizontally and must live in a single inspection VPC.\n\nWhich two actions should the company take? (Choose two.)",
+    "options": [
+      {
+        "key": "A",
+        "text": "In the inspection VPC, create a Gateway Load Balancer with the appliances in its target group, create an endpoint service for the load balancer, create Gateway Load Balancer endpoints in the inspection VPC, and point the routes of the transit gateway attachment subnets at those endpoints."
+      },
+      {
+        "key": "B",
+        "text": "Turn on cross-zone load balancing on the target group of the Gateway Load Balancer so that a flow can be handled by an appliance in any Availability Zone and the fleet is used evenly during an Availability Zone event."
+      },
+      {
+        "key": "C",
+        "text": "Create a traffic mirror target on the appliance fleet and a traffic mirror session for every elastic network interface in the 30 spoke VPCs, and forward the mirrored packets to the appliances for inspection and enforcement."
+      },
+      {
+        "key": "D",
+        "text": "Turn on appliance mode on the transit gateway VPC attachment of the inspection VPC so that the transit gateway sends both directions of a flow to the same Availability Zone for the life of that flow."
+      },
+      {
+        "key": "E",
+        "text": "Place the appliances in a target group behind an internal Network Load Balancer that has a TCP listener, and route the traffic from the spoke VPCs to that Network Load Balancer so that the appliances receive the traffic and forward it onward."
+      }
+    ],
+    "correctAnswers": [
+      "A",
+      "D"
+    ],
+    "explanation": "A and D are correct. A Gateway Load Balancer is a transparent bump-in-the-wire device: it encapsulates the original packet in GENEVE without altering it, so the appliance sees the real source and destination addresses, and it can drop as well as inspect because the packet only continues if the appliance returns it. Flows are distributed to appliances with 5-tuple stickiness and the fleet scales horizontally through the target group, while Gateway Load Balancer endpoints make the inspection VPC the single insertion point. Appliance mode is required on the inspection VPC attachment because without it the transit gateway keeps traffic in the Availability Zone in which it arrived, so the forward and return directions of a cross-zone flow can land on appliances in different zones and the stateful appliance drops the half of the flow it never saw start.\n\nB is incorrect because cross-zone load balancing spreads flows across Availability Zones, which is the opposite of what a stateful fleet needs. It adds inter-zone data transfer charges and does not address the asymmetry, which is caused by transit gateway zone affinity rather than by the load balancer.\n\nC is incorrect because Traffic Mirroring is out of band. The appliance receives a copy while the original packet is already on its way, so detection is possible but enforcement is not, and a session per interface across 30 VPCs does not scale.\n\nE is incorrect because a Network Load Balancer is a proxy in this role. It rewrites the destination address to the target, so the appliance sees traffic addressed to itself rather than the original destination, and there is no mechanism to return an inspected packet to its original path.",
+    "tags": [
+      "Gateway Load Balancer",
+      "appliance mode",
+      "transit gateway",
+      "GENEVE",
+      "IDS/IPS"
+    ]
   }
 ]
