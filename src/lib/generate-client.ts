@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { Question } from "@/types/question";
 import type { Certification } from "@/types/certification";
 import { storage } from "./storage";
+import { getQuestionDifficulty } from "./cert-level";
 
 export class QuestionGenerationError extends Error {
   constructor(message: string) {
@@ -27,10 +28,7 @@ export async function generateQuestionsOnDemand(
     dangerouslyAllowBrowser: true,
   });
 
-  const difficulty =
-    cert.code.startsWith("SAP") || cert.code.startsWith("DOP") || cert.code.startsWith("AIP")
-      ? "professional"
-      : "associate";
+  const difficulty = getQuestionDifficulty(cert.code);
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-5-20250514",

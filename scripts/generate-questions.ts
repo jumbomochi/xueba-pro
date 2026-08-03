@@ -7,6 +7,7 @@ import { buildSystemPrompt, buildGeneratePrompt } from "./prompts";
 // Import types - these scripts run via tsx so we can import from src
 import type { Question } from "../src/types/question";
 import type { Certification } from "../src/types/certification";
+import { getQuestionDifficulty } from "../src/lib/cert-level";
 
 const client = new Anthropic();
 
@@ -25,10 +26,7 @@ async function generateForDomain(
   domainName: string,
   count: number
 ): Promise<Question[]> {
-  const difficulty =
-    cert.code.startsWith("SAP") || cert.code.startsWith("DOP") || cert.code.startsWith("AIP")
-      ? ("professional" as const)
-      : ("associate" as const);
+  const difficulty = getQuestionDifficulty(cert.code);
 
   const systemPrompt = buildSystemPrompt(cert);
   const userPrompt = buildGeneratePrompt(

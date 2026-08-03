@@ -1,22 +1,29 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { getCertLevel } from "@/lib/cert-level";
 import type { Certification } from "@/types/certification";
+
+const LEVEL_LABELS = {
+  associate: "Associate",
+  professional: "Professional",
+  specialty: "Specialty",
+} as const;
 
 interface CertificationCardProps {
   certification: Certification;
 }
 
 export function CertificationCard({ certification }: CertificationCardProps) {
-  const isProfessional = certification.code.startsWith("SAP") || certification.code.startsWith("DOP") || certification.code.startsWith("AIP");
+  const level = getCertLevel(certification.code);
 
   return (
     <Link href={`/exam/${certification.id}`}>
       <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Badge variant={isProfessional ? "default" : "secondary"}>
-              {isProfessional ? "Professional" : "Associate"}
+            <Badge variant={level === "associate" ? "secondary" : "default"}>
+              {LEVEL_LABELS[level]}
             </Badge>
             <Badge variant="outline">{certification.code}</Badge>
           </div>
