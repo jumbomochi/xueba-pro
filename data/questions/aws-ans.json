@@ -1500,5 +1500,746 @@
       "multicast domain",
       "EC2"
     ]
+  },
+  {
+    "id": "c4cfdbbf69cf",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company uses a 4 Gbps AWS Direct Connect dedicated connection with a link aggregation group (LAG) bundle to connect to five VPCs that are deployed in the us-east-1 Region. Each VPC serves a different business unit and uses its own private VIF for connectivity to the on-premises environment. Users are reporting slowness when they access resources that are hosted on AWS.\n\nA network engineer finds that there are sudden increases in throughput and that the Direct Connect connection becomes saturated at the same time for about an hour each business day. The company wants to know which business unit is causing the sudden increase in throughput. The network engineer must find out this information and implement a solution to resolve the problem.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Review the Amazon CloudWatch metrics for VirtualInterfaceBpsEgress and VirtualInterfaceBpsIngress to determine which VIF is sending the highest throughput during the period in which slowness is observed. Upgrade the bandwidth of the existing dedicated connection to 10 Gbps."
+      },
+      {
+        "key": "B",
+        "text": "Review the Amazon CloudWatch metrics for ConnectionBpsIngress and ConnectionPpsEgress to determine which VIF is sending the highest throughput during the period in which slowness is observed. Upgrade the existing dedicated connection to a 5 Gbps hosted connection."
+      },
+      {
+        "key": "C",
+        "text": "Review the Amazon CloudWatch metrics for VirtualInterfaceBpsEgress and VirtualInterfaceBpsIngress to determine which VIF is sending the highest throughput during the period in which slowness is observed. Create a new 10 Gbps dedicated connection. Shift traffic from the existing dedicated connection to the new dedicated connection."
+      },
+      {
+        "key": "D",
+        "text": "Review the Amazon CloudWatch metrics for ConnectionBpsIngress and ConnectionPpsEgress to determine which VIF is sending the highest throughput during the period in which slowness is observed. Create a new 10 Gbps dedicated connection. Shift traffic from the existing dedicated connection to the new dedicated connection."
+      }
+    ],
+    "correctAnswers": [
+      "C"
+    ],
+    "explanation": "C is correct. VirtualInterfaceBpsEgress and VirtualInterfaceBpsIngress are published per virtual interface, so they attribute throughput to an individual private VIF and therefore to an individual business unit. To add capacity, note that the bandwidth of an existing Direct Connect dedicated connection cannot be changed in place: you order a new dedicated connection at the higher port speed and migrate the VIFs to it, which is exactly what this option does.\n\nA is wrong because it selects the right per-VIF metrics but then proposes upgrading the bandwidth of the existing dedicated connection, which AWS does not support; a dedicated connection's port speed is fixed for the life of the connection.\n\nB is wrong on both counts. ConnectionBpsIngress and ConnectionPpsEgress are connection-level aggregates across the whole LAG, so they cannot show which VIF is responsible, and moving from a dedicated connection to a 5 Gbps hosted connection is neither an in-place upgrade path nor a meaningful capacity increase for a bundle that already saturates at 4 Gbps.\n\nD is wrong because, although creating a new 10 Gbps dedicated connection is a valid capacity fix, the connection-level metrics it relies on aggregate all five VIFs and cannot identify the business unit that causes the spike.",
+    "tags": [
+      "Direct Connect",
+      "CloudWatch",
+      "LAG",
+      "virtual interface",
+      "monitoring"
+    ]
+  },
+  {
+    "id": "a345e1d87993",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A financial services company runs microservices on Amazon EC2 instances in private subnets across three Availability Zones. The instances reach the internet through NAT gateways and reach on-premises systems through a transit gateway attachment. The company already publishes VPC flow logs in the default record format to Amazon CloudWatch Logs.\n\nA security analyst is investigating a suspected scanning campaign. The analyst needs to see the original source and destination IP addresses of packets before and after the NAT gateways translate them, so that traffic can be attributed to the instance that actually sent it rather than to the NAT gateway. The analyst also needs to separate half-open connection attempts from fully established sessions in order to recognize port scans.\n\nWhich solution will meet these requirements with the LEAST operational overhead?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create a new VPC flow log on the VPC that uses a custom log record format that adds the pkt-srcaddr, pkt-dstaddr, and tcp-flags fields to the default fields. Publish the new flow log to Amazon CloudWatch Logs, and analyze the records with CloudWatch Logs Insights."
+      },
+      {
+        "key": "B",
+        "text": "Modify the log record format of the existing VPC flow log so that it adds the pkt-srcaddr, pkt-dstaddr, and tcp-flags fields to the default fields. Keep publishing to the same Amazon CloudWatch Logs log group, retain the existing 10-minute aggregation interval, and analyze the records with CloudWatch Logs Insights."
+      },
+      {
+        "key": "C",
+        "text": "Create a traffic mirror session that uses the elastic network interface of each NAT gateway as the mirror source and an analysis fleet as the mirror target. Extract the pre-translation addresses and the TCP flags from the mirrored packets."
+      },
+      {
+        "key": "D",
+        "text": "Create a transit gateway flow log that uses the default log record format, publish it to Amazon CloudWatch Logs, and correlate its records with the existing VPC flow log records by using the interface ID and the timestamp of each record."
+      }
+    ],
+    "correctAnswers": [
+      "A"
+    ],
+    "explanation": "A is correct. pkt-srcaddr and pkt-dstaddr report the original packet-level addresses rather than the addresses of the intermediate NAT gateway or gateway endpoint, so the analyst can attribute translated traffic to the originating instance. tcp-flags reports the bitmask of flags observed in the aggregation window, which distinguishes SYN-only, half-open attempts from SYN plus ACK or FIN sessions. All three fields are available only in a custom format, which is chosen when the flow log is created.\n\nB is wrong because the log record format of a flow log is immutable. You cannot change the fields of an existing flow log; you must delete it and create a new one, or create an additional flow log with the format you want.\n\nC is wrong because a NAT gateway's network interface is not a supported Traffic Mirroring source. Mirror sources must be elastic network interfaces attached to supported EC2 instances, and mirroring an entire NAT gateway's traffic would also be far more expensive than logging.\n\nD is wrong because the default format, whether for a VPC flow log or a transit gateway flow log, does not include pkt-srcaddr, pkt-dstaddr, or tcp-flags, so correlating two default-format logs still yields no pre-translation addresses and no flag data.",
+    "tags": [
+      "VPC Flow Logs",
+      "custom format",
+      "NAT gateway",
+      "CloudWatch Logs Insights"
+    ]
+  },
+  {
+    "id": "7a6223ca3d18",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "multiple",
+    "stem": "A company suspects that data is being exfiltrated from a group of Amazon EC2 instances that run on Nitro-based instance types in a private subnet. A security team must capture and inspect the full packet payloads of the traffic that these instances send on TCP port 443 to one specific external CIDR block. The captured packets must be delivered to a fleet of third-party analysis appliances that sit behind a Network Load Balancer in a separate security VPC that is reachable over VPC peering.\n\nThe solution must copy the traffic out of band so that the path and the latency of production traffic do not change, and the company must not install any capture agent or other software on the EC2 instances.\n\nWhich two steps should the network engineer take to meet these requirements? (Choose two.)",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create a VPC flow log on the source subnet that uses a custom record format that includes the pkt-srcaddr, pkt-dstaddr, and tcp-flags fields, and deliver the records to Amazon S3 for analysis with Amazon Athena."
+      },
+      {
+        "key": "B",
+        "text": "Create a traffic mirror target that references the Network Load Balancer that fronts the third-party analysis appliances in the security VPC."
+      },
+      {
+        "key": "C",
+        "text": "Deploy the third-party analysis appliances behind a Gateway Load Balancer, and replace the default route in the source subnet route table with a route that sends 0.0.0.0/0 to the Gateway Load Balancer endpoint."
+      },
+      {
+        "key": "D",
+        "text": "Create a traffic mirror filter with inbound and outbound rules that match TCP port 443 traffic to the external CIDR block, and create a traffic mirror session on each source instance's elastic network interface that references the filter and the target."
+      },
+      {
+        "key": "E",
+        "text": "Install tcpdump on each EC2 instance, run it as a systemd service that writes rotating capture files, and use a scheduled job to upload the capture files to an Amazon S3 bucket in the security account."
+      }
+    ],
+    "correctAnswers": [
+      "B",
+      "D"
+    ],
+    "explanation": "B and D are correct. Amazon VPC Traffic Mirroring copies packets, including their payloads, from the elastic network interface of a Nitro-based instance and sends them to a mirror target without changing the production traffic path. A mirror target can be a network interface, a Network Load Balancer, or a Gateway Load Balancer endpoint, so the existing NLB in the security VPC is used directly. A mirror filter with rules that match TCP port 443 to the suspect CIDR limits the volume that is copied, and a mirror session binds each source interface to the filter and the target. No software is installed on the instances.\n\nA is wrong because VPC flow logs record connection metadata only. Even a custom format with pkt-srcaddr and tcp-flags contains no packet payload, so it cannot show what data left the environment.\n\nC is wrong because a Gateway Load Balancer places the appliances inline. Every packet is redirected through the appliance fleet, which changes the path and the latency of production traffic and creates a new failure domain, violating the stated out-of-band requirement.\n\nE is wrong because it requires installing and operating capture software on every instance, which the company prohibits; it also means a compromised host can disable its own capture.",
+    "tags": [
+      "Traffic Mirroring",
+      "packet capture",
+      "VPC Flow Logs",
+      "Network Load Balancer"
+    ]
+  },
+  {
+    "id": "0b2845b199b1",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A network engineer is troubleshooting a connectivity failure between a three-tier application and its database. An application server that has an elastic network interface in a private subnet of VPC A cannot open a TCP connection on port 3306 to an Amazon RDS instance whose elastic network interface is in a private subnet of VPC B. Both VPCs are attached to the same transit gateway. Several teams changed route tables, network ACLs, and security groups in both VPCs during the past week, and the change records are incomplete. Attempts to ping the database endpoint from the application server also fail.\n\nThe engineer must identify the exact component that is blocking the connection as quickly as possible, without waiting for the application to retry.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Launch a bastion host in each VPC. Run ping and traceroute in both directions between the two subnets, and conclude that the transit gateway route tables are misconfigured if the ICMP probes do not complete."
+      },
+      {
+        "key": "B",
+        "text": "Enable VPC flow logs on both elastic network interfaces, publish the logs to Amazon CloudWatch Logs, and search for REJECT records to determine which security group is denying the traffic on port 3306."
+      },
+      {
+        "key": "C",
+        "text": "Use Network Access Analyzer with a scope that names the application server network interface as the source and the database network interface as the destination, and review the findings that the analysis returns."
+      },
+      {
+        "key": "D",
+        "text": "Use VPC Reachability Analyzer to create and run a path from the application server network interface to the database network interface for TCP port 3306, and review the explanation codes that the analysis returns for the blocking hop."
+      }
+    ],
+    "correctAnswers": [
+      "D"
+    ],
+    "explanation": "D is correct. VPC Reachability Analyzer performs a configuration analysis of the path between two supported resources, including paths that traverse a transit gateway. When a path is not reachable it names the component that blocks it and returns an explanation code such as a missing route, a denying network ACL entry, or a security group that does not allow the port. It needs no live traffic, so the engineer gets an answer immediately.\n\nA is wrong because ICMP is a separate protocol from TCP. A security group or network ACL can permit port 3306 while dropping ICMP, so failed pings prove nothing about the database path, and the conclusion about transit gateway routing does not follow.\n\nB is wrong because flow logs cannot distinguish a security group denial from a network ACL denial, and they record nothing at all when a route is missing or blackholed, because the packet never reaches the interface. Flow logs also depend on the application generating traffic.\n\nC is wrong because Network Access Analyzer evaluates whether paths that match a scope exist, which is intended for auditing unintended access. It does not diagnose why a specific path is broken and returns no findings when the path does not exist.",
+    "tags": [
+      "Reachability Analyzer",
+      "troubleshooting",
+      "transit gateway",
+      "security groups"
+    ]
+  },
+  {
+    "id": "83c075ee8cd6",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company runs 200 AWS accounts in an organization in AWS Organizations. Each account contains several VPCs that use internet gateways, NAT gateways, transit gateway attachments, and VPC peering connections. After an audit, the compliance team requires evidence that no Amazon EC2 instance, container task, or load balancer that hosts an internal application can be reached from the internet.\n\nThe team must repeat this evaluation every week and needs findings that name the specific resources and describe the network path that makes each resource reachable, including paths that traverse peering connections or a transit gateway. The company wants to avoid building and maintaining custom tooling.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create a VPC Reachability Analyzer path from every internet gateway to every elastic network interface in every VPC. Run all of the paths on a weekly schedule, and export the results of each analysis to an Amazon S3 bucket for the compliance team to review."
+      },
+      {
+        "key": "B",
+        "text": "Create a Network Access Analyzer scope in each account that matches paths from internet gateways to elastic network interfaces. Run the scope analyses weekly, and review the findings that name each reachable resource and path."
+      },
+      {
+        "key": "C",
+        "text": "Enable AWS Config across the organization with an aggregator, and deploy managed rules such as restricted-ssh, restricted-common-ports, and ec2-instance-no-public-ip as a conformance pack. Review the aggregated noncompliant resources report every week."
+      },
+      {
+        "key": "D",
+        "text": "Deliver VPC flow logs from every VPC to a central Amazon S3 bucket. Run a weekly Amazon Athena query that returns accepted flows whose source address is outside the company's private IP ranges, and report the matching resources to the compliance team."
+      }
+    ],
+    "correctAnswers": [
+      "B"
+    ],
+    "explanation": "B is correct. Network Access Analyzer evaluates the entire network configuration of an account against a scope and returns findings that describe each matching path hop by hop, including paths that pass through peering connections, transit gateways, and load balancers. Scopes are reusable and can be run repeatedly, so the weekly evidence requirement is satisfied without custom code.\n\nA is wrong because Reachability Analyzer is a point-to-point tool. One analysis evaluates one source and one destination, so covering 200 accounts would require an enormous number of individually created paths, which is precisely the custom tooling the company wants to avoid.\n\nC is wrong because AWS Config rules evaluate the configuration of individual resources in isolation. A rule can tell you that an instance has a public IP address, but it cannot determine whether an instance without a public IP is still reachable through a load balancer, a peered VPC, or a transit gateway.\n\nD is wrong because flow logs only show traffic that actually occurred. A resource that is exposed but that no one has connected to yet produces no records, so the query would report compliance for a genuinely reachable resource.",
+    "tags": [
+      "Network Access Analyzer",
+      "AWS Organizations",
+      "compliance",
+      "auditing"
+    ]
+  },
+  {
+    "id": "5726e5fa1053",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company has migrated an on-premises file transfer workload to Amazon EC2 instances and connects its data center to AWS by using an AWS Site-to-Site VPN connection that terminates on a transit gateway. Both the data center LAN and the VPC subnets use an MTU of 1500 bytes.\n\nAfter the migration, users report that SSH sessions, DNS lookups, and small HTTP requests to the EC2 instances succeed, but transfers of files larger than a few kilobytes stall and eventually time out. A packet capture on an EC2 instance shows the TCP three-way handshake completing normally and then shows that the large data segments never arrive, while a capture on the on-premises side shows the same full-size segments being retransmitted repeatedly. The customer gateway device does not adjust the TCP maximum segment size on its tunnel interfaces.\n\nWhich solution will resolve the file transfer failures?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create a second Site-to-Site VPN connection to the transit gateway and enable equal-cost multi-path routing across the tunnels of both connections so that the additional aggregate bandwidth can carry the large transfers."
+      },
+      {
+        "key": "B",
+        "text": "Enable jumbo frames by setting the MTU to 9001 bytes on the elastic network interfaces of the EC2 instances and on the on-premises hosts so that large file transfers are carried in fewer, larger packets."
+      },
+      {
+        "key": "C",
+        "text": "Set the MTU of the VPN tunnel interfaces on the customer gateway device to 1446 bytes, and clamp the TCP maximum segment size to 1406 bytes for the traffic that traverses those tunnel interfaces."
+      },
+      {
+        "key": "D",
+        "text": "Increase the TCP keepalive interval on the EC2 instances and increase the session idle timeout on the on-premises firewall so that long file transfers are not torn down before they finish."
+      }
+    ],
+    "correctAnswers": [
+      "C"
+    ],
+    "explanation": "C is correct. An AWS Site-to-Site VPN tunnel supports a maximum transmission unit of 1446 bytes and a corresponding maximum segment size of 1406 bytes. Because both networks use a 1500-byte MTU, the endpoints negotiate an MSS of 1460 bytes and send full-size segments that cannot fit through the tunnel and are discarded, while small packets such as SSH keystrokes and DNS queries pass normally. A Site-to-Site VPN connection does not support path MTU discovery, so the senders never learn about the smaller path MTU on their own. Setting the tunnel MTU to 1446 bytes and clamping the MSS to 1406 bytes on the customer gateway device forces the endpoints to negotiate segments that fit.\n\nA is wrong because throughput is not the constraint. Small packets already pass, and adding tunnels or ECMP capacity does nothing for packets that exceed the tunnel MTU.\n\nB is wrong because Site-to-Site VPN does not support jumbo frames. Raising the interface MTU to 9001 bytes only increases the number of oversized packets that the tunnel drops.\n\nD is wrong because the transfers are not idle. Packets are being dropped and retransmitted continuously, so extending keepalive and idle timers only delays the eventual failure.",
+    "tags": [
+      "Site-to-Site VPN",
+      "MTU",
+      "MSS clamping",
+      "troubleshooting"
+    ]
+  },
+  {
+    "id": "063b96557944",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A network engineer manages an AWS Site-to-Site VPN connection between a data center and a transit gateway. The VPN connection has two tunnels that both terminate on the same customer gateway device. The engineer discovered that one of the tunnels had been down for six days before anyone noticed, because the VPN connection itself remained in the UP state while the surviving tunnel carried all of the traffic.\n\nThe operations team must now receive a notification within minutes whenever either individual tunnel goes down, even when the other tunnel is still passing traffic. The solution must not require any software or monitoring appliance to be installed in the data center, and it must identify which of the two tunnels is affected.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create one Amazon CloudWatch alarm per tunnel on the TunnelState metric in the AWS/VPN namespace, using the VpnId and TunnelIpAddress dimensions, that alarms when the statistic falls below 1. Send the alarm actions to an Amazon SNS topic that the operations team subscribes to."
+      },
+      {
+        "key": "B",
+        "text": "Create one Amazon CloudWatch alarm per tunnel on the TunnelDataIn metric in the AWS/VPN namespace, using the VpnId and TunnelIpAddress dimensions, that alarms when the sum of bytes received is 0 over a 5-minute period. Send the alarm actions to an Amazon SNS topic."
+      },
+      {
+        "key": "C",
+        "text": "Create an Amazon CloudWatch alarm on the ConnectionState metric in the AWS/DX namespace for the VPN connection that alarms when the state is 0. Send the alarm actions to an Amazon SNS topic that the operations team subscribes to."
+      },
+      {
+        "key": "D",
+        "text": "Create an Amazon Route 53 health check that monitors the IP address of an on-premises server across the VPN connection, and create an Amazon CloudWatch alarm on the HealthCheckStatus metric that notifies an Amazon SNS topic."
+      }
+    ],
+    "correctAnswers": [
+      "A"
+    ],
+    "explanation": "A is correct. The AWS/VPN namespace publishes TunnelState for each tunnel of a VPN connection, with a value of 0 for DOWN and 1 for UP, and the TunnelIpAddress dimension identifies the specific tunnel. One alarm per tunnel that fires when the value drops below 1 detects the failure of either tunnel independently of the aggregate VPN connection state, and it runs entirely in AWS.\n\nB is wrong because TunnelDataIn measures traffic volume, not health. A tunnel that is up but idle, for example overnight, reports zero bytes and would trigger a false alarm, while a tunnel that is down during a period when the other tunnel carries the load also reports zero, so the signal is ambiguous.\n\nC is wrong because ConnectionState in the AWS/DX namespace is an AWS Direct Connect metric. It is not published for Site-to-Site VPN connections, so the alarm would remain in the INSUFFICIENT_DATA state forever.\n\nD is wrong because Route 53 health checkers originate from public AWS IP ranges on the internet and cannot traverse a private Site-to-Site VPN tunnel to reach an on-premises address. Even if it could, a single health check would not indicate which tunnel had failed.",
+    "tags": [
+      "Site-to-Site VPN",
+      "CloudWatch alarms",
+      "TunnelState",
+      "Amazon SNS"
+    ]
+  },
+  {
+    "id": "441ca951ff0a",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company operates a global network that contains three transit gateways, one each in the us-east-1, eu-west-1, and ap-southeast-2 Regions. The transit gateways are connected to one another by transit gateway peering attachments. The transit gateway in us-east-1 has an AWS Direct Connect gateway association that provides connectivity to an on-premises data center.\n\nUsers report that an application in a VPC in eu-west-1 can send traffic to the on-premises data center, but responses never arrive. Traffic from the same VPC to VPCs in the other two Regions works correctly. Dozens of transit gateway route tables and hundreds of VPC route tables exist across the environment, and each Region is managed by a different team.\n\nWhich solution will identify the misconfigured route with the LEAST operational overhead?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Export every transit gateway route table and every VPC route table to Amazon S3 with a script, and have each Regional team manually review the exported tables for blackhole routes and for missing propagations toward the on-premises prefixes."
+      },
+      {
+        "key": "B",
+        "text": "Create a VPC Reachability Analyzer path from the application's elastic network interface in eu-west-1 to the on-premises destination IP address, and review the explanation codes that the analysis returns for the return path."
+      },
+      {
+        "key": "C",
+        "text": "Enable transit gateway flow logs on all three transit gateways, deliver the logs to Amazon S3, and query them with Amazon Athena to find the attachment on which the return packets were dropped."
+      },
+      {
+        "key": "D",
+        "text": "Register the three transit gateways in an AWS Network Manager global network, and use Route Analyzer to run the path between the source and destination prefixes in both the forward direction and the return direction."
+      }
+    ],
+    "correctAnswers": [
+      "D"
+    ],
+    "explanation": "D is correct. AWS Network Manager's Route Analyzer inspects the routing configuration of a registered global network and traces a path across transit gateway attachments and peering attachments. It can analyze the forward and the return path separately, which is exactly what an asymmetric or one-way failure requires, and it reports the specific hop where a route is missing or blackholed. Registering the existing transit gateways is a small, one-time action.\n\nA is wrong because manually exporting and reviewing dozens of transit gateway route tables and hundreds of VPC route tables across three teams is the highest-overhead option available and is error prone.\n\nB is wrong because VPC Reachability Analyzer does not support destinations outside of AWS, so an on-premises IP address that is reached over Direct Connect cannot be used as the destination. It also does not evaluate paths that cross transit gateway peering attachments between Regions.\n\nC is wrong because transit gateway flow logs record flows that actually traversed the transit gateway. When a route is missing or blackholed, the return packets produce no records that point at the offending route table, so the engineer can only infer the problem from the absence of data.",
+    "tags": [
+      "AWS Network Manager",
+      "Route Analyzer",
+      "transit gateway peering",
+      "troubleshooting"
+    ]
+  },
+  {
+    "id": "a19f2d3ce28c",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company runs a TCP-based payment gateway behind a Network Load Balancer. The load balancer originally had subnets in two Availability Zones. To prepare for growth, a network engineer enabled a subnet in a third Availability Zone on the load balancer, but the Auto Scaling group that hosts the application has not yet been extended into that Availability Zone, so the target group has no targets registered there. Cross-zone load balancing is disabled on the target group.\n\nSince the change, roughly one third of new client connections time out. The clients are third-party systems that cache DNS answers for long periods and that sometimes connect to a load balancer IP address directly. The company must keep all three Availability Zones enabled on the load balancer and cannot deploy additional application instances at this time.\n\nWhich solution will resolve the connection timeouts?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Reduce the health check interval of the target group to 10 seconds and reduce the unhealthy threshold count to 2 so that the load balancer detects and stops using failing targets more quickly."
+      },
+      {
+        "key": "B",
+        "text": "Enable cross-zone load balancing on the target group so that the load balancer node in the third Availability Zone forwards connections to healthy targets in the other two Availability Zones, and accept the inter-Availability Zone data transfer charges."
+      },
+      {
+        "key": "C",
+        "text": "Create an Amazon Route 53 failover record set that points to the load balancer and that is associated with a health check, so that clients are directed away from the Availability Zone that has no registered targets."
+      },
+      {
+        "key": "D",
+        "text": "Reduce the time to live of the load balancer's DNS record from 60 seconds to 5 seconds so that clients stop caching the IP address of the load balancer node in the Availability Zone that has no registered targets."
+      }
+    ],
+    "correctAnswers": [
+      "B"
+    ],
+    "explanation": "B is correct. With cross-zone load balancing disabled, each Network Load Balancer node serves only the targets in its own Availability Zone. The node in the third Availability Zone has no targets, so any client that connects to that node's IP address fails. Enabling cross-zone load balancing lets that node distribute connections to healthy targets in the other Availability Zones, which fixes the failures without adding instances and without removing the subnet. The trade-off is inter-Availability Zone data transfer charges.\n\nA is wrong because health checks only evaluate registered targets. There are no targets in the third Availability Zone to mark unhealthy, so shortening the interval or the threshold changes nothing.\n\nC is wrong because a Route 53 health check evaluates the load balancer as a whole through its DNS name. A single alias or failover record cannot steer clients away from one zonal IP address of a Network Load Balancer, and clients that already cached that address or that connect to it directly would still fail.\n\nD is wrong because the TTL of an Elastic Load Balancing DNS record is fixed at 60 seconds and cannot be changed. Even if it could, clients that connect to a cached IP address directly would continue to reach the empty Availability Zone.",
+    "tags": [
+      "Network Load Balancer",
+      "cross-zone load balancing",
+      "Availability Zones",
+      "DNS"
+    ]
+  },
+  {
+    "id": "17666d256ced",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company inspects east-west traffic between spoke VPCs by using a centralized inspection VPC. The inspection VPC contains a Gateway Load Balancer with stateful third-party firewall appliances registered as targets in two Availability Zones, and the inspection VPC is attached to a transit gateway. Spoke VPC route tables send all inter-VPC traffic to the transit gateway, and the transit gateway route tables send that traffic to the inspection VPC attachment.\n\nConnections between instances that are in different Availability Zones fail immediately after the TCP three-way handshake completes, while connections between instances that are in the same Availability Zone succeed. The firewall appliance logs contain large numbers of packets that are dropped with the reason \"packet does not match an existing session.\"\n\nWhich solution will resolve the connection failures?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Increase the flow timeout values on the firewall appliances and increase the deregistration delay on the Gateway Load Balancer target group so that sessions are not aged out while a connection is still in use."
+      },
+      {
+        "key": "B",
+        "text": "Enable cross-zone load balancing on the Gateway Load Balancer so that every firewall appliance can receive traffic that originates from either Availability Zone of the inspection VPC."
+      },
+      {
+        "key": "C",
+        "text": "Add static routes to the inspection VPC subnet route tables that send all return traffic to the Gateway Load Balancer endpoint in the first Availability Zone so that one appliance set handles every flow."
+      },
+      {
+        "key": "D",
+        "text": "Enable appliance mode on the transit gateway VPC attachment for the inspection VPC so that the transit gateway sends both directions of a flow to the same Availability Zone."
+      }
+    ],
+    "correctAnswers": [
+      "D"
+    ],
+    "explanation": "D is correct. By default a transit gateway keeps traffic in the Availability Zone in which it entered the transit gateway, so the forward direction of a cross-Availability Zone flow can be inspected by the appliance in one Availability Zone while the return direction is inspected by the appliance in another. A stateful firewall that never saw the handshake drops the return packets as out of state. Appliance mode makes the transit gateway select a single attachment Availability Zone for the lifetime of the flow, using the same source and destination pair in both directions, which restores symmetry.\n\nA is wrong because the packets are not being aged out. The appliance reports that it has no session for them at all, which is a symptom of asymmetry rather than of a short timeout.\n\nB is wrong because the asymmetry is introduced by the transit gateway before traffic reaches the Gateway Load Balancer. Cross-zone load balancing changes which appliance is chosen, but the reversed source and destination tuple of the return flow still hashes independently, so the two directions can still land on different appliances.\n\nC is wrong because pinning all return traffic to one Availability Zone creates a single point of failure, does not change the transit gateway's Availability Zone affinity for the forward direction, and loses the resilience the two-zone design was built for.",
+    "tags": [
+      "transit gateway",
+      "appliance mode",
+      "Gateway Load Balancer",
+      "asymmetric routing"
+    ]
+  },
+  {
+    "id": "5164c2d517b1",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "Amazon GuardDuty has generated a finding that indicates a host in a production VPC queried a domain name that is associated with a command-and-control server. The VPC contains several hundred Amazon EC2 instances and Amazon ECS tasks in private subnets across three Availability Zones.\n\nAll of the workloads use the default Amazon-provided DNS server at the base of the VPC CIDR plus two, and all outbound internet traffic leaves through a shared NAT gateway, so the existing VPC flow log records show the NAT gateway address as the source of the outbound traffic. A network engineer must determine exactly which workload issued the query, and the company must retain this capability for future investigations.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create a Route 53 Resolver query logging configuration, associate it with the VPC, and publish the query logs to Amazon CloudWatch Logs. Search the logs for the domain name and read the source instance ID and source IP address from the matching records."
+      },
+      {
+        "key": "B",
+        "text": "Create a VPC flow log for each private subnet that uses a custom record format, publish the logs to Amazon CloudWatch Logs, and search the logs for records whose destination field contains the malicious domain name."
+      },
+      {
+        "key": "C",
+        "text": "Turn on AWS CloudTrail data events for Amazon Route 53 in the account, deliver the events to Amazon CloudWatch Logs, and search the events for the malicious domain name to find the principal that issued the query."
+      },
+      {
+        "key": "D",
+        "text": "Create a Route 53 Resolver DNS Firewall rule group that blocks a domain list containing the malicious domain, associate it with the VPC, and review the CloudWatch metrics for the rule group to identify the source of the blocked queries."
+      }
+    ],
+    "correctAnswers": [
+      "A"
+    ],
+    "explanation": "A is correct. Route 53 Resolver query logging records every DNS query that originates from resources in the VPC and resolves through the Amazon-provided resolver. Each record includes the query name, the source IP address, and, for EC2 instances, the instance ID, so the engineer can attribute the query to a single workload. The configuration is persistent, so it also serves future investigations.\n\nB is wrong because VPC flow logs contain only IP addresses, ports, protocols, and byte and packet counts. No flow log field, in the default format or in a custom format, contains a DNS name, so searching for the domain returns nothing.\n\nC is wrong because CloudTrail records control plane API calls such as ChangeResourceRecordSets. It does not record DNS resolution performed by the VPC resolver, and Route 53 Resolver query logs are not a CloudTrail data event type.\n\nD is wrong because Route 53 Resolver DNS Firewall CloudWatch metrics are aggregated per rule group, VPC, and firewall rule. They report how many queries were blocked but not which instance issued them, so the engineer would still need query logging to identify the host.",
+    "tags": [
+      "Route 53 Resolver",
+      "query logging",
+      "GuardDuty",
+      "DNS",
+      "incident response"
+    ]
+  },
+  {
+    "id": "fad8ef22e35b",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company runs an application on Amazon EC2 instances in private subnets of a VPC that has no internet gateway, no NAT gateway, and no outbound proxy. The application must call AWS Secrets Manager.\n\nA network engineer created an interface VPC endpoint for com.amazonaws.us-east-1.secretsmanager in two Availability Zones and attached a security group that allows inbound TCP port 443 from the application subnets. Testing shows that the instances can connect over port 443 to the endpoint-specific DNS name of the interface endpoint, but the application still fails, because the standard service name secretsmanager.us-east-1.amazonaws.com resolves to a public IP address that is unreachable from the private subnets. The company cannot change the application code or its configuration files.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Use AWS Systems Manager Run Command to add an entry to the /etc/hosts file of every instance that maps secretsmanager.us-east-1.amazonaws.com to a private IP address of the interface VPC endpoint, and add the same entry to the launch template user data."
+      },
+      {
+        "key": "B",
+        "text": "Create a Route 53 Resolver outbound endpoint in the VPC and a forwarding rule for amazonaws.com that forwards the queries to the company's on-premises DNS servers over the existing private connectivity."
+      },
+      {
+        "key": "C",
+        "text": "Verify that the enableDnsSupport and enableDnsHostnames attributes are enabled on the VPC, and then modify the interface VPC endpoint to turn on the private DNS name option for the endpoint."
+      },
+      {
+        "key": "D",
+        "text": "Create a gateway VPC endpoint for AWS Secrets Manager, and add a route for the corresponding AWS managed prefix list to the route table of each private subnet that hosts the application."
+      }
+    ],
+    "correctAnswers": [
+      "C"
+    ],
+    "explanation": "C is correct. When private DNS is enabled on an interface endpoint, AWS creates a private hosted zone that is associated with the VPC so that the standard service name resolves to the endpoint's private IP addresses. That makes existing code work unchanged. Private DNS requires both the enableDnsSupport and enableDnsHostnames VPC attributes to be set to true, which is why they must be verified first; the option is unavailable otherwise.\n\nA is wrong because static hosts file entries are brittle and high in operational overhead. Endpoint IP addresses can change, the entry pins traffic to one Availability Zone's endpoint interface, and every new instance type, AMI, or container image must be maintained separately.\n\nB is wrong because forwarding amazonaws.com to on-premises resolvers sends the queries away from the VPC resolver. The on-premises servers return the same public IP addresses, so the application still cannot reach the service, and the change would break resolution for every other AWS service name.\n\nD is wrong because gateway VPC endpoints exist only for Amazon S3 and Amazon DynamoDB. There is no gateway endpoint for AWS Secrets Manager, so the endpoint cannot be created.",
+    "tags": [
+      "interface VPC endpoint",
+      "private DNS",
+      "PrivateLink",
+      "Secrets Manager"
+    ]
+  },
+  {
+    "id": "e8922436be03",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company runs a nightly batch job on an Auto Scaling group of several hundred Amazon EC2 instances in a single private subnet. Every instance opens tens of thousands of short-lived HTTPS connections to one IP address and port that belong to a third-party payment API. All of the outbound traffic uses one public NAT gateway.\n\nDuring the peak of each run, a portion of the connections fail. The ErrorPortAllocation metric for the NAT gateway in the AWS/NATGateway namespace rises above zero at exactly the same time. The PacketsDropCount metric remains at zero, and Amazon CloudWatch shows that the NAT gateway stays far below its bandwidth and packets-per-second limits throughout the run.\n\nWhich solution will resolve the connection failures?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Replace the NAT gateway with a NAT instance that uses a larger instance type with enhanced networking enabled, and disable source/destination checking on the instance. Update the private subnet route table so that the default route points to the network interface of the NAT instance."
+      },
+      {
+        "key": "B",
+        "text": "Create additional NAT gateways in separate subnets, and split the Auto Scaling group across those subnets with their own route tables so that connections to the payment API are spread across several NAT gateway source addresses."
+      },
+      {
+        "key": "C",
+        "text": "Widen the ephemeral port range in the net.ipv4.ip_local_port_range kernel parameter on every batch instance and enable net.ipv4.tcp_tw_reuse so that ports in the TIME_WAIT state are recycled sooner. Apply the settings through a systemd unit so that they persist across reboots."
+      },
+      {
+        "key": "D",
+        "text": "Create an Amazon CloudWatch alarm on the ErrorPortAllocation metric that invokes an AWS Lambda function to restart the NAT gateway whenever the metric rises above zero during the batch run, and that notifies the operations team through an Amazon SNS topic."
+      }
+    ],
+    "correctAnswers": [
+      "B"
+    ],
+    "explanation": "B is correct. A NAT gateway supports up to 55,000 simultaneous connections to each unique destination, where a destination is a combination of destination IP address, destination port, and protocol. Because every instance targets the same API address and port, the whole fleet shares one 55,000-connection pool, and ErrorPortAllocation counts the allocations that failed after the pool was exhausted. Spreading the fleet across several subnets that route to different NAT gateways gives each group of instances its own port pool and its own source address, which multiplies the available connections.\n\nA is wrong because a NAT instance has a single primary private address and therefore roughly the same per-destination ephemeral port ceiling. It also removes the managed scaling and availability of the NAT gateway and adds patching and failover work, so it does not solve the exhaustion.\n\nC is wrong because the exhausted port pool belongs to the NAT gateway, not to the instances. Each instance connects from its own private address and is nowhere near its own port limit, so kernel tuning on the instances has no effect on the NAT gateway allocation.\n\nD is wrong because alarming on the metric adds no capacity, and a NAT gateway is a managed resource that cannot be restarted; replacing it would break every in-flight connection without raising the per-destination limit.",
+    "tags": [
+      "NAT gateway",
+      "port allocation",
+      "CloudWatch metrics",
+      "scaling"
+    ]
+  },
+  {
+    "id": "9f5320b3e330",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "multiple",
+    "stem": "A company defines all of its network infrastructure, including VPCs, route tables, security groups, and transit gateway attachments, in AWS CloudFormation stacks. During incidents, on-call engineers repeatedly sign in to the AWS Management Console and modify security group rules and route table entries by hand. Weeks later, stack updates fail or silently revert those manual changes, which causes new outages.\n\nA network engineer must be notified whenever the deployed network resources no longer match their CloudFormation templates, and must prevent engineers from making these changes outside of CloudFormation in the future. The company wants to avoid building and operating custom reconciliation tooling.\n\nWhich two actions should the network engineer take to meet these requirements? (Choose two.)",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create an Amazon EventBridge scheduled rule that starts an AWS Systems Manager Automation runbook, which calls the CloudFormation DetectStackDrift API for each network stack and publishes any DRIFTED result to an Amazon SNS topic."
+      },
+      {
+        "key": "B",
+        "text": "Attach a CloudFormation stack policy to each network stack that denies the Update action on the security group and route table resources, so that changes made in the console are rejected."
+      },
+      {
+        "key": "C",
+        "text": "Apply a service control policy in AWS Organizations that denies the ec2:AuthorizeSecurityGroupIngress, ec2:RevokeSecurityGroupIngress, ec2:CreateRoute, and ec2:ReplaceRoute actions unless the request is made by the CloudFormation execution role."
+      },
+      {
+        "key": "D",
+        "text": "Enable termination protection on each network stack so that the resources that the stacks manage cannot be modified from outside of CloudFormation."
+      },
+      {
+        "key": "E",
+        "text": "Turn on AWS CloudTrail Insights in every account that contains a network stack so that unusual API activity is detected and the affected resources are returned to the state that the template defines."
+      }
+    ],
+    "correctAnswers": [
+      "A",
+      "C"
+    ],
+    "explanation": "A and C are correct. CloudFormation drift detection compares the current configuration of each stack resource with the template and reports resources whose properties differ. Running DetectStackDrift on a schedule from EventBridge and Systems Manager Automation, then notifying through Amazon SNS, gives continuous detection without custom reconciliation code. A service control policy that denies the mutating EC2 networking actions for every principal except the CloudFormation execution role removes the ability to make the change by hand in the first place, which is the prevention half of the requirement.\n\nB is wrong because a stack policy only governs what CloudFormation itself may update during a stack update operation. It has no effect on direct console or API calls made against the underlying resources.\n\nD is wrong because termination protection only blocks deletion of the stack. It does not restrict any modification of the resources that the stack manages.\n\nE is wrong because CloudTrail Insights detects anomalous rates of API activity and records an insight event. It never reverts a change and it would not flag a small number of deliberate console edits.",
+    "tags": [
+      "CloudFormation",
+      "drift detection",
+      "service control policy",
+      "governance"
+    ]
+  },
+  {
+    "id": "812b57946574",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company connects to AWS by using an AWS Direct Connect link aggregation group (LAG) that bundles four dedicated 10 Gbps connections at a single location. A backup AWS Site-to-Site VPN connection advertises the same on-premises prefixes with a longer AS path, so the VPN is used only when the Direct Connect path withdraws its routes. Production traffic regularly consumes 28 Gbps during business hours.\n\nThe company has determined that if the LAG can no longer carry at least 30 Gbps, the LAG must stop forwarding traffic immediately so that BGP withdraws the Direct Connect routes and the workload fails over to the backup VPN connection. Running over a congested link while an engineer investigates is not acceptable.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Leave the minimum number of operational links for the LAG at 0, and create an Amazon CloudWatch alarm on the ConnectionState metric of each member connection that pages the on-call engineer to shift traffic to the VPN connection manually."
+      },
+      {
+        "key": "B",
+        "text": "Configure the BGP session on the private virtual interface of the LAG to prepend the company's autonomous system number three times, so that the backup Site-to-Site VPN path becomes preferred whenever a member link fails."
+      },
+      {
+        "key": "C",
+        "text": "Set the minimum number of operational links for the LAG to 4, so that the LAG stays operational only while all four member connections are up and stops forwarding traffic as soon as any link fails."
+      },
+      {
+        "key": "D",
+        "text": "Set the minimum number of operational links for the LAG to 3, so that the LAG stops forwarding traffic as soon as fewer than three member connections are operational."
+      }
+    ],
+    "correctAnswers": [
+      "D"
+    ],
+    "explanation": "D is correct. The minimum links setting of a Direct Connect LAG defines how many member connections must be operational for the LAG itself to be operational. Three operational 10 Gbps connections provide the 30 Gbps floor that the company requires, so setting the value to 3 makes the LAG go down automatically the moment capacity would fall below that floor. The BGP sessions on the LAG's virtual interfaces then drop, the Direct Connect routes are withdrawn, and traffic fails over to the backup VPN without human intervention.\n\nA is wrong because a minimum links value of 0 means the LAG remains operational with a single member link. Traffic keeps flowing over a degraded bundle until a human reacts, which is the exact outcome the company rejected.\n\nB is wrong because AS path prepending changes route preference, not link detection. The prepended routes are advertised continuously, which would shift traffic to the low-bandwidth VPN even while all four links are healthy, and prepending does nothing when a link fails.\n\nC is wrong because it is too strict. Losing a single link would take the entire LAG down even though 30 Gbps of capacity remains, needlessly moving 28 Gbps of production traffic onto a VPN connection.",
+    "tags": [
+      "Direct Connect",
+      "LAG",
+      "minimum links",
+      "failover",
+      "BGP"
+    ]
+  },
+  {
+    "id": "a7606473563c",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company serves a product catalog through Amazon CloudFront with an Application Load Balancer origin. The cache behavior uses legacy cache settings that forward all query strings, all cookies, and all HTTP headers to the origin and include all of them in the cache key. Clients append many marketing and session tracking query string parameters to requests, and every browser sends a different User-Agent header.\n\nThe cache hit ratio has fallen to 12 percent, and the origin fleet must scale out constantly to absorb the load. Product managers confirm that the response body varies only with the id, lang, and version query string parameters. The origin still needs to receive the CloudFront-Viewer-Country header for analytics.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create a cache policy that includes only the id, lang, and version query strings in the cache key and includes no cookies and no headers. Create an origin request policy that forwards the CloudFront-Viewer-Country header to the origin. Attach both policies to the cache behavior."
+      },
+      {
+        "key": "B",
+        "text": "Keep the existing legacy cache settings, and raise the minimum TTL, the maximum TTL, and the default TTL of the cache behavior to one year so that objects remain in the CloudFront edge caches far longer and fewer requests are forwarded to the origin."
+      },
+      {
+        "key": "C",
+        "text": "Keep the existing legacy cache settings, and turn on Origin Shield in the AWS Region that is closest to the Application Load Balancer so that requests from every edge location are consolidated through one additional caching layer before they reach the origin."
+      },
+      {
+        "key": "D",
+        "text": "Keep the existing legacy cache settings, configure the Application Load Balancer origin to return a Cache-Control: max-age=86400 header on every catalog response, and set the cache behavior to obey the cache headers that the origin sends instead of the behavior TTLs."
+      }
+    ],
+    "correctAnswers": [
+      "A"
+    ],
+    "explanation": "A is correct. The cache hit ratio is low because the cache key includes every query string, cookie, and header, so a single object is stored under an enormous number of distinct keys. A cache policy that restricts the key to the three parameters that actually change the response collapses those keys into a handful of variants. Data that the origin still needs but that must not fragment the cache, such as CloudFront-Viewer-Country, is carried by an origin request policy, which forwards a value to the origin without adding it to the cache key.\n\nB is wrong because TTL controls how long an object stays cached, not how many distinct objects are created. With the key still fragmented by tracking parameters and User-Agent, nearly every request is a first request for a new key and therefore still a miss.\n\nC is wrong because Origin Shield only adds a centralized caching layer between edge locations and the origin. It reduces duplicate fetches for the same cache key, but the key space remains fragmented, so the edge hit ratio stays low and the origin still sees a request for every unique key.\n\nD is wrong for the same reason as B: origin cache headers change the freshness lifetime, not the cache key, so the fragmentation that causes the misses is untouched.",
+    "tags": [
+      "CloudFront",
+      "cache policy",
+      "origin request policy",
+      "cache hit ratio"
+    ]
+  },
+  {
+    "id": "3ae329fc238d",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "Users of a web application report intermittent HTTP 503 errors. The application runs on Amazon ECS tasks that are registered in a target group behind an Application Load Balancer.\n\nA network engineer reviews Amazon CloudWatch metrics for the load balancer during a five-minute window in which users reported errors and observes the following. HTTPCode_ELB_5XX_Count rose sharply. HTTPCode_Target_5XX_Count stayed at zero. TargetResponseTime stayed at its normal value of 90 milliseconds. RequestCount was unchanged from the previous hour. HealthyHostCount for the target group dropped to zero for the duration of the window and then recovered on its own.\n\nWhich action should the network engineer take to address the root cause?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Turn on Application Load Balancer access logs, filter the records for entries whose target_status_code field is 500, and give those entries to the application team so that they can debug the failing code path."
+      },
+      {
+        "key": "B",
+        "text": "Associate an AWS WAF web ACL that contains a rate-based rule with the Application Load Balancer so that the clients that generate the error responses are blocked before they reach the targets."
+      },
+      {
+        "key": "C",
+        "text": "Investigate why HealthyHostCount dropped to zero by reviewing the target group health check path, interval, timeout, and matcher, and by reviewing the ECS task start-up and deregistration behavior."
+      },
+      {
+        "key": "D",
+        "text": "Increase the load balancer idle timeout and the target group deregistration delay, because the errors are HTTP 504 gateway timeouts that occur when targets respond more slowly than the load balancer allows."
+      }
+    ],
+    "correctAnswers": [
+      "C"
+    ],
+    "explanation": "C is correct. HTTPCode_ELB_5XX_Count counts responses that the load balancer generated itself, while HTTPCode_Target_5XX_Count counts 5xx responses that the targets returned. Here the target counter is zero, so the application never returned an error. An Application Load Balancer returns HTTP 503 on its own when a target group has no healthy targets, which matches HealthyHostCount dropping to zero for exactly the affected window. The root cause therefore lies in health checking or task lifecycle, not in application code.\n\nA is wrong because the targets returned no 5xx responses. Requests that the load balancer answers itself are logged with a target_status_code of \"-\", so a filter for 500 returns nothing and the application team is sent to investigate a problem that does not exist.\n\nB is wrong because nothing in the metrics indicates abusive clients. RequestCount was unchanged, so blocking traffic would not restore healthy targets and would instead deny legitimate users.\n\nD is wrong because a 504 from the load balancer is accompanied by an elevated TargetResponseTime, and 503 rather than 504 is what users reported. TargetResponseTime stayed normal, so raising the idle timeout and the deregistration delay addresses a condition that is not occurring.",
+    "tags": [
+      "Application Load Balancer",
+      "CloudWatch metrics",
+      "5XX errors",
+      "health checks",
+      "troubleshooting"
+    ]
+  },
+  {
+    "id": "a8fc5cff13f2",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company runs a data processing platform on Amazon EC2 instances in private subnets across three Availability Zones. The instances have no public IP addresses, and the company's security policy prohibits assigning public IP addresses to them.\n\nThe instances read and write approximately 400 TB each month to Amazon S3 buckets in the same AWS Region and perform a high volume of Amazon DynamoDB operations against tables in the same Region. All of this traffic currently leaves the VPC through NAT gateways, one in each Availability Zone. The monthly bill shows that NAT gateway data processing charges are now the largest single line item for the platform.\n\nA network engineer must reduce the cost of this traffic while keeping the instances in private subnets.\n\nWhich solution will meet these requirements at the LOWEST cost?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create interface VPC endpoints for Amazon S3 and for Amazon DynamoDB in each Availability Zone, turn on private DNS for the endpoints, and let the instances continue to use the standard service endpoint names."
+      },
+      {
+        "key": "B",
+        "text": "Create gateway VPC endpoints for Amazon S3 and for Amazon DynamoDB, and add routes for the corresponding AWS managed prefix lists to the route table of each private subnet that hosts the platform."
+      },
+      {
+        "key": "C",
+        "text": "Create three additional NAT gateways so that there are two NAT gateways in each Availability Zone, and split the private subnet route tables between them so that data processing load is shared."
+      },
+      {
+        "key": "D",
+        "text": "Move the data processing instances into public subnets, assign Elastic IP addresses to them, and route their traffic to Amazon S3 and Amazon DynamoDB directly through the internet gateway."
+      }
+    ],
+    "correctAnswers": [
+      "B"
+    ],
+    "explanation": "B is correct. Gateway VPC endpoints for Amazon S3 and Amazon DynamoDB carry no hourly charge and no per-gigabyte data processing charge. Adding the endpoint's managed prefix list route to each private subnet route table sends the traffic straight to the service over the AWS network, bypassing the NAT gateways entirely, so both the NAT data processing charge and the associated data transfer charge for that traffic disappear. The instances stay in private subnets.\n\nA is wrong because interface endpoints are billed per endpoint hour in every Availability Zone plus a per-gigabyte data processing charge. At 400 TB a month that per-gigabyte charge makes interface endpoints far more expensive than gateway endpoints, which are free for exactly these two services.\n\nC is wrong because NAT gateway charges are driven by hours and by gigabytes processed. Adding three more NAT gateways adds hourly charges and processes the same 400 TB, so the bill increases rather than decreases.\n\nD is wrong because it violates the security policy that prohibits public IP addresses on these instances, and it exposes the platform to inbound reachability from the internet.",
+    "tags": [
+      "gateway VPC endpoint",
+      "NAT gateway",
+      "cost optimization",
+      "Amazon S3",
+      "DynamoDB"
+    ]
+  },
+  {
+    "id": "c6d375189032",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "multiple",
+    "stem": "A company uses a dedicated AWS Direct Connect connection with a private virtual interface to reach its production VPCs. Over the past month, applications have experienced brief outages at unpredictable times, usually at night. When an engineer investigates the next morning, the Direct Connect connection and the virtual interface are both in the available state, and the on-premises router logs show that the BGP session with AWS went down and came back up within a minute. No one is alerted when this happens.\n\nThe operations team must be notified automatically within minutes whenever the BGP session for the virtual interface goes down, and must also receive AWS notifications about scheduled maintenance or failures that affect the underlying connection. The solution must require minimal ongoing maintenance.\n\nWhich two actions should the network engineer take? (Choose two.)",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create an Amazon Route 53 health check that monitors the IP address of an on-premises router across the private virtual interface, and create an Amazon CloudWatch alarm on the resulting HealthCheckStatus metric."
+      },
+      {
+        "key": "B",
+        "text": "Create an Amazon CloudWatch alarm on the ConnectionBpsEgress metric in the AWS/DX namespace for the connection that enters the ALARM state when the average throughput falls to 0 bits per second over a 5-minute period."
+      },
+      {
+        "key": "C",
+        "text": "Create an Amazon CloudWatch alarm on the VirtualInterfaceBgpStatus metric in the AWS/DX namespace, using the ConnectionId and VirtualInterfaceId dimensions, that enters the ALARM state when the value is 0, and send the alarm action to an Amazon SNS topic."
+      },
+      {
+        "key": "D",
+        "text": "Schedule an Amazon EC2 instance in the VPC to run traceroute to an on-premises address every minute and write the output to Amazon CloudWatch Logs, and create a metric filter that alarms when the trace does not complete."
+      },
+      {
+        "key": "E",
+        "text": "Create an Amazon EventBridge rule that matches AWS Health events for AWS Direct Connect that are scoped to the connection and the virtual interface, and set an Amazon SNS topic as the target of the rule."
+      }
+    ],
+    "correctAnswers": [
+      "C",
+      "E"
+    ],
+    "explanation": "C and E are correct. The AWS/DX namespace publishes VirtualInterfaceBgpStatus, which reports the state of the BGP peering session for a virtual interface as 1 for up and 0 for down, and it can be filtered by the ConnectionId and VirtualInterfaceId dimensions. An alarm on that metric detects a flap within a minute or two and notifies through Amazon SNS, and it needs no maintenance because AWS publishes the metric. AWS Health emits Direct Connect events such as scheduled maintenance and connection down notifications, and an EventBridge rule that matches those events and targets an SNS topic delivers the operational notifications the team also needs.\n\nA is wrong because Route 53 health checkers run from public AWS IP ranges on the internet. They cannot send probes across a private virtual interface to an on-premises address, so the health check would report failure permanently.\n\nB is wrong because throughput is not a health signal. Legitimate quiet periods at night produce near-zero egress, which would generate false alarms, and a flap that lasts under a minute would barely move a 5-minute average.\n\nD is wrong because it adds an instance, a scheduler, and a log pipeline to maintain, misses flaps that are shorter than the polling interval, and a failed traceroute does not identify BGP as the cause.",
+    "tags": [
+      "Direct Connect",
+      "BGP",
+      "CloudWatch alarms",
+      "AWS Health",
+      "EventBridge"
+    ]
+  },
+  {
+    "id": "c0bdfb225a32",
+    "certificationId": "aws-ans",
+    "domain": "Network Management and Operation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company recently decommissioned the two on-premises DNS servers at 10.10.0.10 and 10.10.0.11 and replaced them with Route 53 Resolver and a Route 53 private hosted zone that is associated with the VPC.\n\nApplications on the Amazon EC2 instances that were already running continue to resolve names correctly, but every newly launched instance and every instance that is rebooted fails all DNS lookups. A network engineer confirms that the VPC is still associated with a DHCP options set whose domain-name-servers value lists 10.10.0.10 and 10.10.0.11.\n\nThe engineer must restore DNS resolution for all current and future instances in the VPC with the LEAST operational overhead.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Edit the domain-name-servers value of the existing DHCP options set to AmazonProvidedDNS, and wait for the running instances to renew their DHCP leases so that they receive the updated value."
+      },
+      {
+        "key": "B",
+        "text": "Use AWS Systems Manager Run Command to overwrite the /etc/resolv.conf file on every running instance so that it points to the Amazon-provided DNS server at the base of the VPC CIDR plus two."
+      },
+      {
+        "key": "C",
+        "text": "Create a Route 53 Resolver outbound endpoint in the VPC and a forwarding rule for the company's private domain that forwards queries to 10.10.0.10 and 10.10.0.11, and associate the rule with the VPC."
+      },
+      {
+        "key": "D",
+        "text": "Create a new DHCP options set whose domain-name-servers value is AmazonProvidedDNS, associate the new options set with the VPC, and renew the DHCP lease on the running instances so that they pick up the change."
+      }
+    ],
+    "correctAnswers": [
+      "D"
+    ],
+    "explanation": "D is correct. DHCP options sets are immutable: after a set is created its values cannot be changed, so the fix is to create a new set that specifies AmazonProvidedDNS, associate it with the VPC, and then have instances pick it up. New instances receive the value at launch, and running instances receive it when their DHCP lease renews, which can be forced with a lease renewal or a reboot. This is a single VPC-level change that covers current and future instances.\n\nA is wrong because the values of an existing DHCP options set cannot be edited. The API offers only create, associate, and delete operations for DHCP options sets, so this action cannot be performed.\n\nB is wrong because a change written directly to /etc/resolv.conf is overwritten the next time the DHCP client renews the lease or the instance reboots, and it does nothing for instances that the Auto Scaling group launches later. It also has to be repeated for every instance.\n\nC is wrong because a Resolver outbound endpoint forwards queries to the very servers that were decommissioned, so those queries fail. It also does not change which resolvers the instances are configured to use, which is the actual defect.",
+    "tags": [
+      "DHCP options set",
+      "Route 53 Resolver",
+      "DNS",
+      "VPC"
+    ]
   }
 ]
