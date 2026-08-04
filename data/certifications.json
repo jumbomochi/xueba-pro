@@ -57,5 +57,19 @@
     "totalQuestions": 65,
     "timeMinutes": 170,
     "passingScore": 750
+  },
+  {
+    "id": "aws-ans",
+    "name": "AWS Certified Advanced Networking - Specialty",
+    "code": "ANS-C01",
+    "domains": [
+      { "name": "Network Design", "weight": 30 },
+      { "name": "Network Implementation", "weight": 26 },
+      { "name": "Network Management and Operation", "weight": 20 },
+      { "name": "Network Security, Compliance, and Governance", "weight": 24 }
+    ],
+    "totalQuestions": 65,
+    "timeMinutes": 170,
+    "passingScore": 750
   }
 ]
