@@ -18805,5 +18805,395 @@
       "ECS Fargate",
       "High Availability"
     ]
+  },
+  {
+    "id": "81b646e036df",
+    "certificationId": "aws-devops",
+    "domain": "Monitoring and Logging",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company has a mobile application that makes HTTP API calls to an Application Load Balancer (ALB). The ALB routes requests to an AWS Lambda function. Many different versions of the application are in use at any given time, including versions that are in testing by a subset of users. The version of the application is defined in the user-agent header that is sent with all requests to the API.\n\nAfter a series of recent changes to the API, the company has observed issues with the application. The company needs to gather a metric for each API operation by response code for each version of the application that is in use. A DevOps engineer has modified the Lambda function to extract the API operation name, version information from the user-agent header, and response code.\n\nWhich additional set of actions should the DevOps engineer take to gather the required metrics?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Modify the Lambda function to write the API operation name, response code, and version number as a log line to an Amazon CloudWatch Logs log group. Configure a CloudWatch Logs metric filter that increments a metric for each API operation name. Specify response code and application version as dimensions for the metric."
+      },
+      {
+        "key": "B",
+        "text": "Modify the Lambda function to write the API operation name, response code, and version number as a log line to an Amazon CloudWatch Logs log group. Configure a CloudWatch Logs Insights query to populate CloudWatch metrics from the log lines. Specify response code and application version as dimensions for the metric."
+      },
+      {
+        "key": "C",
+        "text": "Configure the ALB access logs to write to an Amazon CloudWatch Logs log group. Modify the Lambda function to respond to the ALB with the API operation name, response code, and version number as response metadata. Configure a CloudWatch Logs metric filter that increments a metric for each API operation name. Specify response code and application version as dimensions for the metric."
+      },
+      {
+        "key": "D",
+        "text": "Configure AWS X-Ray integration on the Lambda function. Modify the Lambda function to create an X-Ray subsegment with the API operation name, response code, and version number. Configure X-Ray insights to extract an aggregated metric for each API operation name and to publish the metric to Amazon CloudWatch. Specify response code and application version as dimensions for the metric."
+      }
+    ],
+    "correctAnswers": [
+      "A"
+    ],
+    "explanation": "A is correct: once the Lambda function emits a structured log line containing the API operation name, the response code, and the application version, a CloudWatch Logs metric filter can match that pattern and increment a metric on every matching line. Metric filters support dimensions whose values are extracted from fields in the log event, so response code and application version become dimensions on a per-operation metric — exactly the breakdown the team needs, with no code beyond the logging the engineer has already added. B is incorrect because CloudWatch Logs Insights is a query engine for analyzing log data interactively or on a schedule; it cannot create or populate CloudWatch metrics, so nothing would exist to alarm on or graph. C is incorrect because ALB access logs are delivered to Amazon S3, not to CloudWatch Logs, and they record only the request/response fields the ALB itself captures — application response metadata returned by the Lambda function does not appear in them, so a metric filter would have nothing to match. D is incorrect because AWS X-Ray Insights surfaces anomalies and fault trends across traces; it does not publish custom dimensional CloudWatch metrics keyed on operation name with response code and application version as dimensions.",
+    "tags": [
+      "CloudWatch Logs",
+      "Metric Filter",
+      "Lambda",
+      "ALB",
+      "Observability"
+    ]
+  },
+  {
+    "id": "16266a4dac1a",
+    "certificationId": "aws-devops",
+    "domain": "Resilient Cloud Solutions",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company provides an application to customers. The application has an Amazon API Gateway REST API that invokes an AWS Lambda function. On initialization, the Lambda function loads a large amount of data from an Amazon DynamoDB table. The data load process results in long cold-start times of 8-10 seconds. The DynamoDB table has DynamoDB Accelerator (DAX) configured.\n\nCustomers report that the application intermittently takes a long time to respond to requests. The application receives thousands of requests throughout the day. In the middle of the day, the application experiences 10 times more requests than at any other time of the day. Near the end of the day, the application's request volume decreases to 10% of its normal total.\n\nA DevOps engineer needs to reduce the latency of the Lambda function at all times of the day.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Configure provisioned concurrency on the Lambda function with a concurrency value of 1. Delete the DAX cluster for the DynamoDB table."
+      },
+      {
+        "key": "B",
+        "text": "Configure reserved concurrency on the Lambda function with a concurrency value of 0."
+      },
+      {
+        "key": "C",
+        "text": "Configure provisioned concurrency on the Lambda function. Configure AWS Application Auto Scaling on the Lambda function with provisioned concurrency values set to a minimum of 1 and a maximum of 100."
+      },
+      {
+        "key": "D",
+        "text": "Configure reserved concurrency on the Lambda function. Configure AWS Application Auto Scaling on the API Gateway API with a reserved concurrency maximum value of 100."
+      }
+    ],
+    "correctAnswers": [
+      "C"
+    ],
+    "explanation": "C is correct: provisioned concurrency keeps execution environments fully initialized — including the large DynamoDB data load that runs during the init phase — so invocations never pay the 8-10 second cold start. Because the traffic profile swings from a 10x midday peak down to 10% of normal near the end of the day, any fixed provisioned amount would either under-provision at peak or waste money at the trough. Registering the function's alias as an AWS Application Auto Scaling scalable target and scaling provisioned concurrency between a minimum of 1 and a maximum of 100 tracks that curve, keeping latency low at all times of the day. A is incorrect because a provisioned concurrency value of 1 warms a single environment, so every concurrent request beyond the first still cold starts during the midday peak; deleting the DAX cluster also makes the initialization data load slower, which increases cold-start time rather than reducing latency. B is incorrect because reserved concurrency only caps and reserves how much concurrency a function may consume — it never pre-initializes an environment — and a reserved concurrency of 0 throttles the function entirely, so the API would fail every request. D is incorrect for the same reason reserved concurrency does not warm anything, and Application Auto Scaling has no scalable target for a 'reserved concurrency' setting on an API Gateway API.",
+    "tags": [
+      "Lambda",
+      "Provisioned Concurrency",
+      "Application Auto Scaling",
+      "API Gateway",
+      "DynamoDB"
+    ]
+  },
+  {
+    "id": "b2596e5f988c",
+    "certificationId": "aws-devops",
+    "domain": "SDLC Automation",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company is adopting AWS CodeDeploy to automate its application deployments for a Java-Apache Tomcat application with an Apache webserver. The development team started with a proof of concept, created a deployment group for a developer environment, and performed functional tests within the application. After completion, the team will create additional deployment groups for staging and production.\n\nThe current log level is configured within the Apache settings, but the team wants to change this configuration dynamically when the deployment occurs, so that they can set different log level configurations depending on the deployment group without having a different application revision for each group.\n\nHow can these requirements be met with the LEAST management overhead and without requiring different script versions for each deployment group?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Tag the Amazon EC2 instances depending on the deployment group. Then place a script into the application revision that calls the metadata service and the EC2 API to identify which deployment group the instance is part of. Use this information to configure the log level settings. Reference the script as part of the AfterInstall lifecycle hook in the appspec.yml file."
+      },
+      {
+        "key": "B",
+        "text": "Create a script that uses the CodeDeploy environment variable DEPLOYMENT_GROUP_NAME to identify which deployment group the instance is part of. Use this information to configure the log level settings. Reference this script as part of the BeforeInstall lifecycle hook in the appspec.yml file."
+      },
+      {
+        "key": "C",
+        "text": "Create a CodeDeploy custom environment variable for each environment. Then place a script into the application revision that checks this environment variable to identify which deployment group the instance is part of. Use this information to configure the log level settings. Reference this script as part of the ValidateService lifecycle hook in the appspec.yml file."
+      },
+      {
+        "key": "D",
+        "text": "Create a script that uses the CodeDeploy environment variable DEPLOYMENT_GROUP_ID to identify which deployment group the instance is part of to configure the log level settings. Reference this script as part of the Install lifecycle hook in the appspec.yml file."
+      }
+    ],
+    "correctAnswers": [
+      "B"
+    ],
+    "explanation": "B is correct: the CodeDeploy agent injects a set of environment variables into every lifecycle hook script it runs, and DEPLOYMENT_GROUP_NAME holds the name of the deployment group the instance belongs to. A single script in the application revision reads that variable and writes the matching Apache log level, so the identical revision and identical script serve the developer, staging, and production deployment groups — no per-group script versions and essentially zero ongoing management overhead. BeforeInstall is a valid hook for preparing configuration before the new files are copied. A is incorrect because tagging instances and then calling the instance metadata service plus the EC2 DescribeTags API adds IAM permissions, extra API calls, and tag hygiene to maintain, which is far more management overhead than reading a variable CodeDeploy already supplies. C is incorrect because CodeDeploy has no feature for defining custom per-environment or per-deployment-group environment variables; only the built-in set (APPLICATION_NAME, DEPLOYMENT_GROUP_NAME, DEPLOYMENT_GROUP_ID, DEPLOYMENT_ID, LIFECYCLE_EVENT) is exposed. D is incorrect on two counts: DEPLOYMENT_GROUP_ID is an opaque identifier that would still need a maintained lookup table to map to a log level, and the Install event is reserved for CodeDeploy's own file-copy step — you cannot attach a hook script to Install in appspec.yml.",
+    "tags": [
+      "CodeDeploy",
+      "AppSpec",
+      "Lifecycle Hooks",
+      "EC2",
+      "Deployment"
+    ]
+  },
+  {
+    "id": "bac6b3a414d7",
+    "certificationId": "aws-devops",
+    "domain": "Security and Compliance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company requires its developers to tag all Amazon Elastic Block Store (Amazon EBS) volumes in an account to indicate a desired backup frequency. This requirement includes EBS volumes that do not require backups. The company uses custom tags named Backup_Frequency that have values of none, daily, or weekly that correspond to the desired backup frequency. An audit finds that developers are occasionally not tagging the EBS volumes.\n\nA DevOps engineer needs to ensure that all EBS volumes always have the Backup_Frequency tag so that the company can perform backups at least weekly unless a different value is specified.\n\nWhich solution will meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Set up AWS Config in the account. Create a custom rule that returns a compliance failure for all Amazon EC2 resources that do not have a Backup_Frequency tag applied. Configure a remediation action that uses a custom AWS Systems Manager Automation runbook to apply the Backup_Frequency tag with a value of weekly."
+      },
+      {
+        "key": "B",
+        "text": "Set up AWS Config in the account. Use a managed rule that returns a compliance failure for EC2::Volume resources that do not have a Backup_Frequency tag applied. Configure a remediation action that uses a custom AWS Systems Manager Automation runbook to apply the Backup_Frequency tag with a value of weekly."
+      },
+      {
+        "key": "C",
+        "text": "Turn on AWS CloudTrail in the account. Create an Amazon EventBridge rule that reacts to EBS CreateVolume events. Configure a custom AWS Systems Manager Automation runbook to apply the Backup_Frequency tag with a value of weekly. Specify the runbook as the target of the rule."
+      },
+      {
+        "key": "D",
+        "text": "Turn on AWS CloudTrail in the account. Create an Amazon EventBridge rule that reacts to EBS CreateVolume events or EBS ModifyVolume events. Configure a custom AWS Systems Manager Automation runbook to apply the Backup_Frequency tag with a value of weekly. Specify the runbook as the target of the rule."
+      }
+    ],
+    "correctAnswers": [
+      "B"
+    ],
+    "explanation": "B is correct: the AWS Config managed rule required-tags can be scoped to the AWS::EC2::Volume resource type and configured with the tag key Backup_Frequency. Config evaluates every existing volume as well as every subsequent configuration change, so volumes that were created untagged before the rule existed — the ones the audit found — and volumes whose tag is removed later are both marked noncompliant. Attaching a remediation action that runs a custom SSM Automation runbook to apply Backup_Frequency=weekly makes the correction automatic while still letting developers set daily or none deliberately. A is incorrect because a custom rule reimplements functionality AWS already ships as a managed rule, and scoping it to all Amazon EC2 resources evaluates instances, snapshots, and security groups that the requirement never covered, generating false noncompliance and needless remediation. C is incorrect because an EventBridge rule on the EBS CreateVolume event tags a volume only at the moment of creation: the untagged volumes that already exist are never touched, and a tag deleted after creation is never detected. D is incorrect for the same reason — adding ModifyVolume catches size, type, and IOPS changes, not tag removal — so like C it leaves pre-existing untagged volumes noncompliant and provides no continuous compliance evaluation.",
+    "tags": [
+      "AWS Config",
+      "EBS",
+      "Tagging",
+      "SSM Automation",
+      "Compliance"
+    ]
+  },
+  {
+    "id": "b18f3e72f839",
+    "certificationId": "aws-devops",
+    "domain": "Resilient Cloud Solutions",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company is using an Amazon Aurora cluster as the data store for its application. The Aurora cluster is configured with a single DB instance. The application performs read and write operations on the database by using the cluster's instance endpoint.\n\nThe company has scheduled an update to be applied to the cluster during an upcoming maintenance window. The cluster must remain available with the least possible interruption during the maintenance window.\n\nWhat should a DevOps engineer do to meet these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Add a reader instance to the Aurora cluster. Update the application to use the Aurora cluster endpoint for write operations. Update the Aurora cluster's reader endpoint for reads."
+      },
+      {
+        "key": "B",
+        "text": "Add a reader instance to the Aurora cluster. Create a custom ANY endpoint for the cluster. Update the application to use the Aurora cluster's custom ANY endpoint for read and write operations."
+      },
+      {
+        "key": "C",
+        "text": "Turn on the Multi-AZ option on the Aurora cluster. Update the application to use the Aurora cluster endpoint for write operations. Update the Aurora cluster's reader endpoint for reads."
+      },
+      {
+        "key": "D",
+        "text": "Turn on the Multi-AZ option on the Aurora cluster. Create a custom ANY endpoint for the cluster. Update the application to use the Aurora cluster's custom ANY endpoint for read and write operations."
+      }
+    ],
+    "correctAnswers": [
+      "A"
+    ],
+    "explanation": "A is correct: a single-instance Aurora cluster has no failover target, so any maintenance action on that one DB instance takes the database offline for the duration. Adding a reader instance (in a second Availability Zone) gives Aurora a promotion candidate, so maintenance triggers a failover that typically completes in about 30 seconds. Moving the application off the instance endpoint matters just as much: the cluster endpoint always resolves to whichever instance is currently the writer and the reader endpoint load balances across readers, so the application follows the failover automatically instead of staying pinned to a specific node. B is incorrect because a custom endpoint of type ANY can return any instance in its member list, reader or writer; routing write operations through it will intermittently land on a read-only replica and the writes will fail. C is incorrect because Amazon Aurora has no Multi-AZ option to turn on — that is an Amazon RDS (non-Aurora) feature. Aurora's storage layer is already replicated across three Availability Zones; compute-level availability comes from adding reader instances in other AZs. D is incorrect for both reasons: there is no Multi-AZ toggle to enable, and it compounds the error by sending writes through a custom ANY endpoint that may resolve to a reader.",
+    "tags": [
+      "Aurora",
+      "RDS",
+      "High Availability",
+      "Failover",
+      "Maintenance"
+    ]
+  },
+  {
+    "id": "8abd10dd0669",
+    "certificationId": "aws-devops",
+    "domain": "Security and Compliance",
+    "difficulty": "professional",
+    "type": "multiple",
+    "stem": "A company must encrypt all AMIs that the company shares across accounts. A DevOps engineer has access to a source account where an unencrypted custom AMI has been built. The DevOps engineer also has access to a target account where an Amazon EC2 Auto Scaling group will launch EC2 instances from the AMI. The DevOps engineer must share the AMI with the target account.\n\nThe company has created an AWS Key Management Service (AWS KMS) key in the source account.\n\nWhich additional steps should the DevOps engineer perform to meet the requirements? (Choose three.)",
+    "options": [
+      {
+        "key": "A",
+        "text": "In the source account, copy the unencrypted AMI to an encrypted AMI. Specify the KMS key in the copy action."
+      },
+      {
+        "key": "B",
+        "text": "In the source account, copy the unencrypted AMI to an encrypted AMI. Specify the default Amazon Elastic Block Store (Amazon EBS) encryption key in the copy action."
+      },
+      {
+        "key": "C",
+        "text": "In the source account, create a KMS grant that delegates permissions to the Auto Scaling group service-linked role in the target account."
+      },
+      {
+        "key": "D",
+        "text": "In the source account, modify the key policy to give the target account permissions to create a grant. In the target account, create a KMS grant that delegates permissions to the Auto Scaling group service-linked role."
+      },
+      {
+        "key": "E",
+        "text": "In the source account, share the unencrypted AMI with the target account."
+      },
+      {
+        "key": "F",
+        "text": "In the source account, share the encrypted AMI with the target account."
+      }
+    ],
+    "correctAnswers": [
+      "A",
+      "D",
+      "F"
+    ],
+    "explanation": "A, D, and F are correct. A: an existing AMI cannot be encrypted in place, so the engineer copies the unencrypted AMI within the source account and specifies the company's customer managed KMS key in the CopyImage call, producing an AMI whose snapshots are encrypted under that key. D: an encrypted AMI is only usable by another account if that account's principals can use the key. The source account's key policy must grant the target account permission to create grants (kms:CreateGrant, along with Decrypt, DescribeKey, GenerateDataKeyWithoutPlaintext, and ReEncrypt), and the grant for the EC2 Auto Scaling service-linked role must then be created in the target account, because that is where the AWSServiceRoleForAutoScaling principal exists. F: the encrypted AMI is what gets shared with the target account, via launch permissions on the image. B is incorrect because the default AWS managed EBS encryption key (aws/ebs) cannot be shared cross-account — you cannot edit an AWS managed key's policy or create grants on it for another account — so the target account could never launch instances from that AMI. C is incorrect because a KMS grant must be created where the grantee principal lives; a grant created in the source account naming a role that exists in the target account is not valid. E is incorrect because sharing the unencrypted AMI directly violates the requirement that all AMIs shared across accounts be encrypted.",
+    "tags": [
+      "AMI",
+      "KMS",
+      "EC2 Auto Scaling",
+      "Cross-Account",
+      "Encryption"
+    ]
+  },
+  {
+    "id": "3396576d88cf",
+    "certificationId": "aws-devops",
+    "domain": "SDLC Automation",
+    "difficulty": "professional",
+    "type": "multiple",
+    "stem": "A company uses AWS CodePipeline pipelines to automate releases of its application. A typical pipeline consists of three stages: build, test, and deployment. The company has been using a separate AWS CodeBuild project to run scripts for each stage. However, the company now wants to use AWS CodeDeploy to handle the deployment stage of the pipelines.\n\nThe company has packaged the application as an RPM package and must deploy the application to a fleet of Amazon EC2 instances. The EC2 instances are in an EC2 Auto Scaling group and are launched from a common AMI.\n\nWhich combination of steps should a DevOps engineer perform to meet these requirements? (Choose two.)",
+    "options": [
+      {
+        "key": "A",
+        "text": "Create a new version of the common AMI with the CodeDeploy agent installed. Update the IAM role of the EC2 instances to allow access to CodeDeploy."
+      },
+      {
+        "key": "B",
+        "text": "Create a new version of the common AMI with the CodeDeploy agent installed. Create an AppSpec file that contains application deployment scripts and grants access to CodeDeploy."
+      },
+      {
+        "key": "C",
+        "text": "Create an application in CodeDeploy. Configure an in-place deployment type. Specify the Auto Scaling group as the deployment target. Add a step to the CodePipeline pipeline to use EC2 Image Builder to create a new AMI. Configure CodeDeploy to deploy the newly created AMI."
+      },
+      {
+        "key": "D",
+        "text": "Create an application in CodeDeploy. Configure an in-place deployment type. Specify the Auto Scaling group as the deployment target. Update the CodePipeline pipeline to use the CodeDeploy action to deploy the application."
+      },
+      {
+        "key": "E",
+        "text": "Create an application in CodeDeploy. Configure an in-place deployment type. Specify the EC2 instances that are launched from the common AMI as the deployment target. Update the CodePipeline pipeline to use the CodeDeploy action to deploy the application."
+      }
+    ],
+    "correctAnswers": [
+      "A",
+      "D"
+    ],
+    "explanation": "A and D are correct. A: CodeDeploy performs EC2 deployments through an agent that must already be running on each instance when a deployment starts, so baking the agent into the common AMI guarantees every instance the Auto Scaling group launches can be deployed to, and the instances' IAM role needs permissions for CodeDeploy and for pulling the revision from the artifact bucket. D: creating a CodeDeploy application with an in-place deployment group whose target is the Auto Scaling group means CodeDeploy also installs the current revision on instances the group launches later, and replacing the third CodeBuild project with a native CodeDeploy action in the CodePipeline pipeline is what actually hands the deployment stage to CodeDeploy. B is incorrect because an AppSpec file only declares file mappings and lifecycle hook scripts — it grants no permissions whatsoever; access comes from the EC2 instance profile and the CodeDeploy service role, so B leaves the deployment unable to authorize. C is incorrect because CodeDeploy deploys application revisions such as this RPM plus its scripts to running instances; it cannot deploy an AMI, and inserting EC2 Image Builder would turn every release into a full image bake. E is incorrect because specifying the individual EC2 instances as the deployment target pins the deployment group to the instances that exist at that moment — any instance the Auto Scaling group launches afterwards comes up running the AMI's older application version and is never deployed to.",
+    "tags": [
+      "CodeDeploy",
+      "CodePipeline",
+      "EC2 Auto Scaling",
+      "AMI",
+      "Deployment"
+    ]
+  },
+  {
+    "id": "5f620a83e6f4",
+    "certificationId": "aws-devops",
+    "domain": "Security and Compliance",
+    "difficulty": "professional",
+    "type": "multiple",
+    "stem": "A company's security team requires that all external Application Load Balancers (ALBs) and Amazon API Gateway APIs are associated with AWS WAF web ACLs. The company has hundreds of AWS accounts, all of which are included in a single organization in AWS Organizations. The company has configured AWS Config for the organization. During an audit, the company finds some externally facing ALBs that are not associated with AWS WAF web ACLs.\n\nWhich combination of steps should a DevOps engineer take to prevent future violations? (Choose two.)",
+    "options": [
+      {
+        "key": "A",
+        "text": "Delegate AWS Firewall Manager to a security account."
+      },
+      {
+        "key": "B",
+        "text": "Delegate Amazon GuardDuty to a security account."
+      },
+      {
+        "key": "C",
+        "text": "Create an AWS Firewall Manager policy to attach AWS WAF web ACLs to any newly created ALBs and API Gateway APIs."
+      },
+      {
+        "key": "D",
+        "text": "Create an Amazon GuardDuty policy to attach AWS WAF web ACLs to any newly created ALBs and API Gateway APIs."
+      },
+      {
+        "key": "E",
+        "text": "Configure an AWS Config managed rule to attach AWS WAF web ACLs to any newly created ALBs and API Gateway APIs."
+      }
+    ],
+    "correctAnswers": [
+      "A",
+      "C"
+    ],
+    "explanation": "A and C are correct. AWS Firewall Manager is the organization-wide enforcement service for AWS WAF, Shield Advanced, security groups, and Network Firewall. It requires AWS Organizations and a delegated administrator account, so A — delegating Firewall Manager to the security account — is the prerequisite. C then creates a Firewall Manager AWS WAF policy scoped to Application Load Balancers and API Gateway stages that automatically associates the specified web ACL with every in-scope resource across all member accounts, including resources created in the future. That auto-remediation on new resources is what prevents future violations rather than merely reporting them after the fact. B is incorrect because Amazon GuardDuty is a threat-detection service that analyzes CloudTrail, VPC flow, and DNS telemetry; delegating it to a security account does nothing about WAF associations. D is incorrect because GuardDuty has no policy construct at all — it cannot attach a web ACL to any resource. E is incorrect because AWS Config rules evaluate and record compliance; a managed rule such as wafv2-associated-with-alb can detect an ALB with no web ACL, but a Config rule does not attach anything by itself, and Config is exactly the detective control the company already had turned on when the audit found the unprotected ALBs.",
+    "tags": [
+      "Firewall Manager",
+      "AWS WAF",
+      "Organizations",
+      "AWS Config",
+      "Security"
+    ]
+  },
+  {
+    "id": "58eafeb045b0",
+    "certificationId": "aws-devops",
+    "domain": "Security and Compliance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company uses AWS Key Management Service (AWS KMS) keys and manual key rotation to meet regulatory compliance requirements. The security team wants to be notified when any keys have not been rotated after 90 days.\n\nWhich solution will accomplish this?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Configure AWS KMS to publish to an Amazon Simple Notification Service (Amazon SNS) topic when keys are more than 90 days old."
+      },
+      {
+        "key": "B",
+        "text": "Configure an Amazon EventBridge event to launch an AWS Lambda function to call the AWS Trusted Advisor API and publish to an Amazon Simple Notification Service (Amazon SNS) topic."
+      },
+      {
+        "key": "C",
+        "text": "Develop an AWS Config custom rule that publishes to an Amazon Simple Notification Service (Amazon SNS) topic when keys are more than 90 days old."
+      },
+      {
+        "key": "D",
+        "text": "Configure AWS Security Hub to publish to an Amazon Simple Notification Service (Amazon SNS) topic when keys are more than 90 days old."
+      }
+    ],
+    "correctAnswers": [
+      "C"
+    ],
+    "explanation": "C is correct: with manual rotation the team creates a new KMS key and re-points the alias, so KMS itself tracks no 'days since last rotation' value to alert on. An AWS Config custom rule backed by a Lambda function can call the KMS APIs to read each key's creation date and rotation state, return NON_COMPLIANT for any key older than 90 days, and run on a periodic trigger so keys age into noncompliance on their own. Config publishes compliance-change notifications that reach the security team's SNS topic, giving exactly the alert that is required. A is incorrect because AWS KMS has no built-in mechanism to publish key-age notifications to Amazon SNS; KMS emits CloudTrail records for API activity only. B is incorrect because AWS Trusted Advisor has no check covering KMS manual key rotation age, so a Lambda function calling the Trusted Advisor API would have no relevant check result to evaluate. D is incorrect because AWS Security Hub aggregates findings and runs standardized controls from frameworks such as the AWS Foundational Security Best Practices — its KMS controls cover conditions like whether automatic rotation is enabled or whether a key is scheduled for deletion, not a custom 90-day manual-rotation threshold, and Security Hub cannot publish to SNS on a condition it does not evaluate.",
+    "tags": [
+      "KMS",
+      "AWS Config",
+      "Key Rotation",
+      "SNS",
+      "Compliance"
+    ]
+  },
+  {
+    "id": "d3231e567322",
+    "certificationId": "aws-devops",
+    "domain": "Security and Compliance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A security review has identified that an AWS CodeBuild project is downloading a database population script from an Amazon S3 bucket using an unauthenticated request. The security team does not allow unauthenticated requests to S3 buckets for this project.\n\nHow can this issue be corrected in the MOST secure manner?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Add the bucket name to the AllowedBuckets section of the CodeBuild project settings. Update the build spec to use the AWS CLI to download the database population script."
+      },
+      {
+        "key": "B",
+        "text": "Modify the S3 bucket settings to enable HTTPS basic authentication and specify a token. Update the build spec to use cURL to pass the token and download the database population script."
+      },
+      {
+        "key": "C",
+        "text": "Remove unauthenticated access from the S3 bucket with a bucket policy. Modify the service role for the CodeBuild project to include Amazon S3 access. Use the AWS CLI to download the database population script."
+      },
+      {
+        "key": "D",
+        "text": "Remove unauthenticated access from the S3 bucket with a bucket policy. Use the AWS CLI to download the database population script using an IAM access key and a secret access key."
+      }
+    ],
+    "correctAnswers": [
+      "C"
+    ],
+    "explanation": "C is correct: the secure fix has two halves. First, a bucket policy (together with S3 Block Public Access) removes the anonymous access that made the unauthenticated download possible, so the script can no longer be fetched by any caller without credentials. Second, the CodeBuild project's service role is granted s3:GetObject on that object; because the build container automatically receives temporary credentials from its service role, an aws s3 cp in the buildspec is signed with SigV4 and authorized by IAM, and no long-lived secret ever enters the build environment. A is incorrect because CodeBuild has no AllowedBuckets project setting — that configuration does not exist — and even if it did, the bucket would remain anonymously readable, which is what the security team objected to. B is incorrect because Amazon S3 does not support HTTPS basic authentication or bearer tokens; S3 authenticates requests using SigV4 request signing, so there is no token setting to enable and the cURL request would still be unauthenticated. D is incorrect because although it does authenticate the request, it does so with a long-lived IAM access key and secret access key that must be stored in the build environment, where they can leak through logs or environment variables and must be rotated manually — strictly less secure than the automatically rotated temporary credentials the CodeBuild service role already provides.",
+    "tags": [
+      "CodeBuild",
+      "S3",
+      "IAM",
+      "Bucket Policy",
+      "Security"
+    ]
   }
 ]
