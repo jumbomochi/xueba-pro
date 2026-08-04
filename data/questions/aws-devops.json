@@ -15329,11 +15329,11 @@
     "options": [
       {
         "key": "A",
-        "text": "Configure S3 Intelligent-Tiering storage class for automatic cost optimization. Intelligent-Tiering moves objects between access tiers based on usage patterns, reducing storage costs for infrequently accessed financial data while maintaining immediate retrieval capability when needed."
+        "text": "Enable S3 Block Public Access on the bucket and at the account level, and set object ownership to bucket owner enforced so that access control lists are disabled. Every request must then be authorized by the bucket policy or an IAM policy."
       },
       {
         "key": "B",
-        "text": "Enable S3 Transfer Acceleration to speed up data uploads to the bucket. Transfer Acceleration uses CloudFront edge locations for faster data transfer, reducing the risk of upload failures that could cause data loss during large financial data ingestion operations."
+        "text": "Configure S3 Event Notifications so that every s3:ObjectRemoved:* event is published to an Amazon SNS topic that the security team subscribes to, giving auditors a notification trail of object and version deletions from the bucket as they occur."
       },
       {
         "key": "C",
@@ -15353,7 +15353,7 @@
       "D",
       "E"
     ],
-    "explanation": "The stem lists three distinct requirements and options C, D and E each satisfy exactly one of them. Option D covers 'prevent accidental deletion': versioning means a delete creates a delete marker rather than destroying data, Object Lock in governance mode blocks version deletion for the retention period (overridable only by principals holding s3:BypassGovernanceRetention), and MFA Delete adds a further barrier. Option C covers 'encryption at rest': bucket default encryption with SSE-KMS and a customer-managed key encrypts every new object automatically, and the key policy gives an independent, auditable decryption boundary. Option E covers 'access logs for audit': S3 server access logging records requester, operation, time and response for every request, and writing to a separate logging bucket keeps the audit trail outside the control of anyone editing the data bucket (CloudTrail data events are an equally valid alternative in practice). Option A is a storage-cost feature - Intelligent-Tiering changes what you pay, not what is protected, and it neither prevents deletion nor encrypts nor logs. Option B is an upload-performance feature; failed uploads are simply retried by the client and never result in data loss, so it addresses none of the three requirements.",
+    "explanation": "The stem lists three distinct requirements and options C, D and E each satisfy exactly one of them. Option D covers 'prevent accidental deletion': versioning means a delete creates a delete marker rather than destroying data, Object Lock in governance mode blocks version deletion for the retention period (overridable only by principals holding s3:BypassGovernanceRetention), and MFA Delete adds a further barrier. Option C covers 'encryption at rest': bucket default encryption with SSE-KMS and a customer-managed key encrypts every new object automatically, and the key policy gives an independent, auditable decryption boundary. Option E covers 'access logs for audit': S3 server access logging records requester, operation, time and response for every request, and writing to a separate logging bucket keeps the audit trail outside the control of anyone editing the data bucket (CloudTrail data events are an equally valid alternative in practice). Option A hardens who can reach the bucket, not what happens to the objects in it: Block Public Access and disabling ACLs stop public and ACL-based grants, but an authorized principal can still delete a version, nothing is encrypted by it, and no request record is produced - it satisfies none of the three stated requirements. Option B is an alert, not a control or a log: notifications are delivered asynchronously after the delete has already succeeded, so nothing is prevented, and the subscription captures only s3:ObjectRemoved events, leaving the reads and writes that an access audit must cover unrecorded - server access logging in option E is what produces that full request record.",
     "tags": [
       "S3",
       "Object Lock",

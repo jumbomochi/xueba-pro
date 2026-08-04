@@ -162,11 +162,11 @@
       },
       {
         "key": "C",
-        "text": "Order one 10 Gbps hosted connection from one AWS Direct Connect Partner and a second 10 Gbps hosted connection from a different AWS Direct Connect Partner. Provision both hosted connections at the same AWS Direct Connect location and terminate them on separate customer routers."
+        "text": "Order one 10 Gbps hosted connection from one AWS Direct Connect Partner and a second 10 Gbps hosted connection from a different AWS Direct Connect Partner, for a total of 20 Gbps. Provision both hosted connections at the same AWS Direct Connect location and terminate them on separate customer routers."
       },
       {
         "key": "D",
-        "text": "Order two 10 Gbps dedicated connections at each of two separate AWS Direct Connect locations, for a total of four connections. Terminate the two connections at each location on separate customer routers, with one location homed to each data center. Create a private virtual interface on every connection and run BGP on each."
+        "text": "Order two 10 Gbps dedicated connections at each of two separate AWS Direct Connect locations. Terminate the two connections at each location on separate customer routers, with one location homed to each data center. Create a private virtual interface with BGP on every connection."
       }
     ],
     "correctAnswers": [
@@ -191,19 +191,19 @@
     "options": [
       {
         "key": "A",
-        "text": "Advertise the same on-premises prefixes over both paths. Tag the prefixes advertised over the VPN connection with the AWS Direct Connect local preference community 7224:7100 and tag the prefixes advertised over the private virtual interface with 7224:7300."
+        "text": "Advertise the same on-premises prefixes over both paths. Tag the prefixes that are advertised over the VPN connection with the AWS Direct Connect local preference community 7224:7100, and tag the prefixes that are advertised over the private virtual interface with the community 7224:7300."
       },
       {
         "key": "B",
-        "text": "Advertise the same on-premises prefixes over both the private virtual interface and the VPN connection. On the VPN BGP session, prepend the on-premises autonomous system number multiple times to the advertised prefixes. On the customer routers, apply a higher BGP local preference to the VPC prefixes learned over the private virtual interface."
+        "text": "Advertise the same on-premises prefixes over both the private virtual interface and the VPN connection. Prepend the on-premises autonomous system number several times on the VPN BGP session. On the customer routers, apply a higher BGP local preference to the VPC prefixes learned over the private virtual interface."
       },
       {
         "key": "C",
-        "text": "Advertise a summary prefix for the on-premises network over the private virtual interface. Advertise the more specific component prefixes of that summary over the VPN connection. Leave the default BGP attributes in place on both sessions."
+        "text": "Advertise a summary prefix for the entire on-premises network over the private virtual interface. Advertise the more specific component prefixes of that summary over the VPN connection, and leave the default BGP attributes in place on both BGP sessions."
       },
       {
         "key": "D",
-        "text": "Configure the Site-to-Site VPN connection to use static routing, and add static routes for the on-premises prefixes to the VPN connection. On the customer routers, configure static routes for the VPC CIDR block over both the Direct Connect connection and the VPN connection with equal administrative distance."
+        "text": "Configure the Site-to-Site VPN connection to use static routing, and add static routes for the on-premises prefixes to the VPN connection. On the customer routers, configure static routes for the VPC CIDR block over both the Direct Connect connection and the VPN connection with equal administrative distance on each route."
       }
     ],
     "correctAnswers": [
@@ -228,19 +228,19 @@
     "options": [
       {
         "key": "A",
-        "text": "Create an inter-Region VPC peering connection between every VPC in us-east-1 and every VPC in eu-west-1. Update the route tables in each VPC with entries for the remote VPC CIDR blocks."
+        "text": "Create an inter-Region VPC peering connection between every VPC in us-east-1 and every VPC in eu-west-1. Update the route tables in each VPC with entries for all of the remote VPC CIDR blocks in the other Region."
       },
       {
         "key": "B",
-        "text": "Create a transit gateway in each Region and attach every VPC to the local transit gateway. Create an inter-Region transit gateway peering attachment between the two transit gateways. Enable route propagation on the peering attachment so that the remote Region's VPC routes are learned automatically."
+        "text": "Create a transit gateway in each Region and attach every VPC to the local transit gateway. Create an inter-Region transit gateway peering attachment between the two transit gateways. Enable route propagation on the peering attachment so that the remote Region's VPC routes are learned automatically in each transit gateway route table."
       },
       {
         "key": "C",
-        "text": "Create a transit gateway in each Region and attach every VPC to the local transit gateway. Create two AWS Site-to-Site VPN connections between the two transit gateways over the public internet and enable equal-cost multi-path routing."
+        "text": "Create a transit gateway in each Region and attach every VPC to the local transit gateway. Create two AWS Site-to-Site VPN connections between the two transit gateways over the public internet, and enable equal-cost multi-path routing across the tunnels."
       },
       {
         "key": "D",
-        "text": "Create a transit gateway in each Region and attach every VPC in that Region to the local transit gateway. Create an inter-Region transit gateway peering attachment between the two transit gateways. Add static routes for the remote Region's CIDR ranges that point to the peering attachment in each transit gateway route table."
+        "text": "Create a transit gateway in each Region and attach every local VPC to it. Peer the two transit gateways with an inter-Region transit gateway peering attachment. In each transit gateway route table, add static routes for the remote Region's CIDR ranges that point to the peering attachment."
       }
     ],
     "correctAnswers": [
@@ -264,19 +264,19 @@
     "options": [
       {
         "key": "A",
-        "text": "Update the ALB security group to allow inbound TCP port 443 only from the AWS managed prefix list com.amazonaws.global.cloudfront.origin-facing. Configure the CloudFront origin with a custom header that contains a secret value, and add a rule to the AWS WAF web ACL that is associated with the ALB to block any request that does not contain the header and value."
+        "text": "Update the ALB security group to allow inbound TCP port 443 only from the AWS managed prefix list com.amazonaws.global.cloudfront.origin-facing. Add a secret custom header to the CloudFront origin, and add an AWS WAF rule on the ALB that blocks requests without that header value."
       },
       {
         "key": "B",
-        "text": "Download the AWS ip-ranges.json file, extract the CLOUDFRONT service prefixes, and add them as individual inbound rules on the ALB security group for TCP port 443. Schedule a quarterly review to refresh the entries."
+        "text": "Download the AWS ip-ranges.json file, extract the CLOUDFRONT service prefixes for the us-west-2 Region and the global set, and add them as individual inbound rules on the ALB security group for TCP port 443. Schedule a quarterly review to refresh the entries as the published ranges change."
       },
       {
         "key": "C",
-        "text": "Update the ALB security group to allow inbound TCP port 443 only from the AWS managed prefix list com.amazonaws.global.cloudfront.origin-facing. Remove all other inbound rules."
+        "text": "Update the ALB security group to allow inbound TCP port 443 only from the AWS managed prefix list com.amazonaws.global.cloudfront.origin-facing, and remove all other inbound rules so that no client can reach the load balancer directly over the internet."
       },
       {
         "key": "D",
-        "text": "Attach an origin access control (OAC) to the ALB origin in the CloudFront distribution and enable SigV4 origin request signing. Leave the ALB security group open to 0.0.0.0/0 on TCP port 443 so that CloudFront can reach the origin."
+        "text": "Attach an origin access control (OAC) to the ALB origin in the CloudFront distribution and enable SigV4 origin request signing so that the ALB accepts only signed requests. Leave the ALB security group open to 0.0.0.0/0 on TCP port 443 so that CloudFront can reach the origin."
       }
     ],
     "correctAnswers": [
@@ -382,7 +382,7 @@
       },
       {
         "key": "C",
-        "text": "Create a Route 53 Resolver outbound endpoint in two subnets in the VPC. Create a Route 53 Resolver forwarding rule for corp.example.com that targets the on-premises DNS server IP addresses and associate the rule with the VPC. Create a Route 53 Resolver inbound endpoint in two subnets in the VPC, and configure the on-premises DNS servers with a conditional forwarder for aws.example.com that points to the inbound endpoint IP addresses."
+        "text": "Create a Route 53 Resolver outbound endpoint in two subnets in the VPC, with a forwarding rule for corp.example.com that targets the on-premises DNS servers and is associated with the VPC. Create a Route 53 Resolver inbound endpoint in two subnets, and add a conditional forwarder on premises for aws.example.com that points to the inbound endpoint IP addresses."
       },
       {
         "key": "D",
@@ -448,19 +448,19 @@
     "options": [
       {
         "key": "A",
-        "text": "Create a transit gateway in us-east-2 and attach both VPCs to it. Create a transit gateway route table that contains a route for 10.0.0.0/16 pointing to each attachment, and associate the spoke attachments with that route table."
+        "text": "Create a transit gateway in us-east-2 and attach both the production VPC and the acquired company's VPC to it. Create a transit gateway route table that contains a route for the 10.0.0.0/16 destination pointing to each of the two attachments, and associate both spoke attachments with that route table."
       },
       {
         "key": "B",
-        "text": "In the production VPC, create a VPC endpoint service that is powered by AWS PrivateLink and is backed by the existing Network Load Balancer. In the acquired company's VPC, create an interface VPC endpoint for that endpoint service, and have the client applications connect to the endpoint DNS name on port 443."
+        "text": "In the production VPC, create a VPC endpoint service powered by AWS PrivateLink and backed by the existing Network Load Balancer. In the acquired company's VPC, create an interface VPC endpoint for that service, and connect the client applications to its DNS name on port 443."
       },
       {
         "key": "C",
-        "text": "Re-address the acquired company's VPC to the CIDR block 10.10.0.0/16 by rebuilding its subnets and workloads, and then create a VPC peering connection between the two VPCs with routes for the remote CIDR block."
+        "text": "Re-address the acquired company's VPC to the CIDR block 10.10.0.0/16 by rebuilding its subnets and migrating its workloads, and then create a VPC peering connection between the two VPCs with routes for the remote CIDR block in each route table."
       },
       {
         "key": "D",
-        "text": "Create a VPC peering connection between the two VPCs. In each VPC route table, add a route for the remote VPC CIDR block that targets the peering connection, and restrict traffic to TCP port 443 with security groups."
+        "text": "Create a VPC peering connection between the production VPC and the acquired company's VPC. In each VPC route table, add a route for the remote VPC CIDR block that targets the peering connection, and restrict traffic to TCP port 443 with security groups."
       }
     ],
     "correctAnswers": [
@@ -604,25 +604,25 @@
     "options": [
       {
         "key": "A",
-        "text": "Allocate an Elastic IP address for the Network Load Balancer in each Region and create Amazon Route 53 failover routing records that reference the Elastic IP addresses, with a primary record for us-east-1 and secondary records for the other Regions."
+        "text": "Create a standard AWS Global Accelerator accelerator with two static anycast IP addresses. Add TCP listeners for ports 7000 through 7100 and port 8883, add an endpoint group in each Region for the regional Network Load Balancer, and use health checks and traffic dials for regional control."
       },
       {
         "key": "B",
-        "text": "Create Amazon Route 53 latency-based routing records for the service hostname that point to the three Network Load Balancers, and associate a Route 53 health check with each record so that failed Regions are removed from the responses."
+        "text": "Allocate an Elastic IP address for the Network Load Balancer in each of the three Regions, and create Amazon Route 53 failover routing records for the service hostname that reference those static Elastic IP addresses, with a primary record for the us-east-1 address and secondary records for the eu-west-1 and ap-northeast-1 addresses."
       },
       {
         "key": "C",
-        "text": "Create an Amazon CloudFront distribution with the three Network Load Balancers configured as origins in an origin group. Use origin failover for regional resilience and configure the consoles to connect to the distribution domain name."
+        "text": "Create Amazon Route 53 latency-based routing records for the service hostname that point to the three regional Network Load Balancers, and associate a Route 53 health check with each record so that Regions that fail their health checks are removed from the DNS responses."
       },
       {
         "key": "D",
-        "text": "Create a standard AWS Global Accelerator accelerator that provides two static anycast IP addresses. Create TCP listeners for ports 7000 through 7100 and port 8883, add an endpoint group in each Region that points to the regional Network Load Balancer, and use health checks and traffic dials to control regional traffic."
+        "text": "Create an Amazon CloudFront distribution with the three regional Network Load Balancers configured as custom origins in an origin group. Use CloudFront origin failover for regional resilience, and configure the game consoles to connect to the distribution domain name."
       }
     ],
     "correctAnswers": [
-      "D"
+      "A"
     ],
-    "explanation": "D is correct. AWS Global Accelerator provides two static anycast IP addresses that are allocated to the accelerator for its lifetime and never change, which is the only option that gives the consoles a fixed set of addresses to configure without DNS. It supports arbitrary TCP and UDP listeners, including port ranges such as 7000 through 7100 and MQTT on 8883, so it is protocol agnostic. Traffic enters the AWS global network at the nearest edge location, health checks fail a Region over in roughly 30 seconds independently of any client DNS cache, and traffic dials let the company drain a percentage of traffic from a Region for maintenance.\n\nA is incorrect because Elastic IP addresses attached to Network Load Balancers are static but regional and not anycast, so players are not routed to the nearest edge and traffic crosses the internet to the target Region. The design still depends on DNS records and TTL for failover, and it offers no mechanism to shift a percentage of traffic during maintenance.\n\nB is incorrect because Route 53 answers with DNS names and addresses that clients and intermediate resolvers cache. The firmware needs fixed IP addresses rather than a hostname, and failover speed depends on record TTL and on resolver behavior that the company cannot control, so seconds-level failover is not guaranteed.\n\nC is incorrect because Amazon CloudFront is an HTTP and HTTPS content delivery network. It cannot proxy a proprietary binary TCP protocol or MQTT on port 8883, and it does not offer static IP addresses that can be embedded in firmware.",
+    "explanation": "A is correct. AWS Global Accelerator provides two static anycast IP addresses that are allocated to the accelerator for its lifetime and never change, which is the only option that gives the consoles a fixed set of addresses to configure without DNS. It supports arbitrary TCP and UDP listeners, including port ranges such as 7000 through 7100 and MQTT on 8883, so it is protocol agnostic. Traffic enters the AWS global network at the nearest edge location, health checks fail a Region over in roughly 30 seconds independently of any client DNS cache, and traffic dials let the company drain a percentage of traffic from a Region for maintenance.\n\nB is incorrect because Elastic IP addresses attached to Network Load Balancers are static but regional and not anycast, so players are not routed to the nearest edge and traffic crosses the internet to the target Region. The design still depends on DNS records and TTL for failover, and it offers no mechanism to shift a percentage of traffic during maintenance.\n\nC is incorrect because Route 53 answers with DNS names and addresses that clients and intermediate resolvers cache. The firmware needs fixed IP addresses rather than a hostname, and failover speed depends on record TTL and on resolver behavior that the company cannot control, so seconds-level failover is not guaranteed.\n\nD is incorrect because Amazon CloudFront is an HTTP and HTTPS content delivery network. It cannot proxy a proprietary binary TCP protocol or MQTT on port 8883, and it does not offer static IP addresses that can be embedded in firmware.",
     "tags": [
       "Global Accelerator",
       "NLB",
@@ -908,21 +908,21 @@
       },
       {
         "key": "B",
-        "text": "Enable cross-zone load balancing on the Gateway Load Balancer so that any appliance in any Availability Zone can receive the traffic."
+        "text": "Enable appliance mode on the transit gateway VPC attachment for the inspection VPC."
       },
       {
         "key": "C",
-        "text": "Enable appliance mode on the transit gateway VPC attachment for each of the spoke VPCs."
+        "text": "Enable cross-zone load balancing on the Gateway Load Balancer so that any appliance in any Availability Zone can receive the traffic."
       },
       {
         "key": "D",
-        "text": "Enable appliance mode on the transit gateway VPC attachment for the inspection VPC."
+        "text": "Enable appliance mode on the transit gateway VPC attachment for each of the spoke VPCs."
       }
     ],
     "correctAnswers": [
-      "D"
+      "B"
     ],
-    "explanation": "D is correct. By default a transit gateway keeps traffic in the Availability Zone in which it was received whenever the destination VPC has an attachment subnet in that zone. When two spokes are in different Availability Zones, the forward direction of a flow can enter the inspection VPC in one zone and the return direction can enter it in another, so the two directions reach two different firewall appliances. A stateful firewall drops the half of the flow it has no session for, which produces exactly the observed symptoms of successful stateless ICMP and broken long lived TCP. Appliance mode changes the transit gateway to a flow hash based forwarding decision that is symmetric for the life of the flow, and it must be enabled on the attachment of the VPC that contains the appliances.\n\nA is incorrect because it does fix symmetry, but only by removing the multi Availability Zone deployment that the company must keep. It also makes the entire inspection path fail if that single Availability Zone is impaired.\n\nB is incorrect because cross-zone load balancing changes which appliance targets the Gateway Load Balancer may select inside the inspection VPC. It does not make the transit gateway deliver both directions of a flow to the same Gateway Load Balancer endpoint, and spreading flows further across zones can make the mismatch more frequent.\n\nC is incorrect because appliance mode belongs on the attachment of the VPC that hosts the inspection appliances. Enabling it on spoke attachments does not change how the transit gateway selects an Availability Zone inside the inspection VPC, so the asymmetry remains.",
+    "explanation": "B is correct. By default a transit gateway keeps traffic in the Availability Zone in which it was received whenever the destination VPC has an attachment subnet in that zone. When two spokes are in different Availability Zones, the forward direction of a flow can enter the inspection VPC in one zone and the return direction can enter it in another, so the two directions reach two different firewall appliances. A stateful firewall drops the half of the flow it has no session for, which produces exactly the observed symptoms of successful stateless ICMP and broken long lived TCP. Appliance mode changes the transit gateway to a flow hash based forwarding decision that is symmetric for the life of the flow, and it must be enabled on the attachment of the VPC that contains the appliances.\n\nA is incorrect because it does fix symmetry, but only by removing the multi Availability Zone deployment that the company must keep. It also makes the entire inspection path fail if that single Availability Zone is impaired.\n\nC is incorrect because cross-zone load balancing changes which appliance targets the Gateway Load Balancer may select inside the inspection VPC. It does not make the transit gateway deliver both directions of a flow to the same Gateway Load Balancer endpoint, and spreading flows further across zones can make the mismatch more frequent.\n\nD is incorrect because appliance mode belongs on the attachment of the VPC that hosts the inspection appliances. Enabling it on spoke attachments does not change how the transit gateway selects an Availability Zone inside the inspection VPC, so the asymmetry remains.",
     "tags": [
       "Transit Gateway",
       "appliance mode",
@@ -2035,17 +2035,17 @@
       },
       {
         "key": "C",
-        "text": "Set the minimum number of operational links for the LAG to 4, so that the LAG stays operational only while all four member connections are up and stops forwarding traffic as soon as any link fails."
+        "text": "Set the minimum number of operational links for the LAG to 3, so that the LAG stops forwarding traffic as soon as fewer than three member connections are operational."
       },
       {
         "key": "D",
-        "text": "Set the minimum number of operational links for the LAG to 3, so that the LAG stops forwarding traffic as soon as fewer than three member connections are operational."
+        "text": "Set the minimum number of operational links for the LAG to 4, so that the LAG stays operational only while all four member connections are up and stops forwarding traffic as soon as any link fails."
       }
     ],
     "correctAnswers": [
-      "D"
+      "C"
     ],
-    "explanation": "D is correct. The minimum links setting of a Direct Connect LAG defines how many member connections must be operational for the LAG itself to be operational. Three operational 10 Gbps connections provide the 30 Gbps floor that the company requires, so setting the value to 3 makes the LAG go down automatically the moment capacity would fall below that floor. The BGP sessions on the LAG's virtual interfaces then drop, the Direct Connect routes are withdrawn, and traffic fails over to the backup VPN without human intervention.\n\nA is wrong because a minimum links value of 0 means the LAG remains operational with a single member link. Traffic keeps flowing over a degraded bundle until a human reacts, which is the exact outcome the company rejected.\n\nB is wrong because AS path prepending changes route preference, not link detection. The prepended routes are advertised continuously, which would shift traffic to the low-bandwidth VPN even while all four links are healthy, and prepending does nothing when a link fails.\n\nC is wrong because it is too strict. Losing a single link would take the entire LAG down even though 30 Gbps of capacity remains, needlessly moving 28 Gbps of production traffic onto a VPN connection.",
+    "explanation": "C is correct. The minimum links setting of a Direct Connect LAG defines how many member connections must be operational for the LAG itself to be operational. Three operational 10 Gbps connections provide the 30 Gbps floor that the company requires, so setting the value to 3 makes the LAG go down automatically the moment capacity would fall below that floor. The BGP sessions on the LAG's virtual interfaces then drop, the Direct Connect routes are withdrawn, and traffic fails over to the backup VPN without human intervention.\n\nA is wrong because a minimum links value of 0 means the LAG remains operational with a single member link. Traffic keeps flowing over a degraded bundle until a human reacts, which is the exact outcome the company rejected.\n\nB is wrong because AS path prepending changes route preference, not link detection. The prepended routes are advertised continuously, which would shift traffic to the low-bandwidth VPN even while all four links are healthy, and prepending does nothing when a link fails.\n\nD is wrong because it is too strict. Losing a single link would take the entire LAG down even though 30 Gbps of capacity remains, needlessly moving 28 Gbps of production traffic onto a VPN connection.",
     "tags": [
       "Direct Connect",
       "LAG",
