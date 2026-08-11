@@ -1,0 +1,184 @@
+[
+  {
+    "id": "26adf386a150",
+    "certificationId": "aws-scs",
+    "domain": "Identity and Access Management",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A security engineer is investigating an AWS Lambda function that returns AccessDenied errors whenever it attempts to read objects from an Amazon S3 bucket named security-artifacts-bucket. The function's execution role has an identity policy that allows s3:GetObject on the bucket and all of its objects. The bucket policy contains a single statement that allows the s3:GetObject action, names the function's execution role ARN as the principal, and sets the Resource element to \"arn:aws:s3:::security-artifacts-bucket\". The bucket uses default server-side encryption with Amazon S3 managed keys (SSE-S3), and the function and bucket are in the same AWS account. Which change to the bucket policy will resolve the errors?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Change the Principal element to the Lambda service principal, lambda.amazonaws.com, so that the Lambda service is granted access to the bucket."
+      },
+      {
+        "key": "B",
+        "text": "Change the Action element to s3:ListBucket so that the statement covers read operations that the function performs against the bucket."
+      },
+      {
+        "key": "C",
+        "text": "Change the Resource element to \"arn:aws:s3:::security-artifacts-bucket/*\" so that the statement applies to the objects in the bucket."
+      },
+      {
+        "key": "D",
+        "text": "Add the Lambda function's ARN as a second entry in the Resource element so that the statement covers both the bucket and the function."
+      }
+    ],
+    "correctAnswers": [
+      "C"
+    ],
+    "explanation": "C is correct. s3:GetObject is an object-level action, so it must be granted on object ARNs of the form arn:aws:s3:::bucket-name/*. A Resource element that names only the bucket ARN matches bucket-level actions, so the current statement authorizes nothing that GetObject requests can use. A is wrong because the function accesses S3 with its execution role's credentials; granting the lambda.amazonaws.com service principal does not authorize the role and would broaden access to the entire service rather than this function. B is wrong because s3:ListBucket is a bucket-level action that authorizes listing, not reading object contents. D is wrong because Resource entries in an S3 bucket policy must be S3 ARNs; a Lambda function ARN is not a valid resource in a bucket policy.",
+    "tags": [
+      "S3 bucket policy",
+      "Lambda",
+      "policy evaluation",
+      "resource ARN"
+    ]
+  },
+  {
+    "id": "fb4ae74e13ff",
+    "certificationId": "aws-scs",
+    "domain": "Identity and Access Management",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company is building a web application that must authenticate external users across multiple microservices that run on Amazon Elastic Container Service (Amazon ECS). The solution must use temporary credentials and must minimize the management overhead of maintaining user databases. A security engineer is defining the order of implementation steps. Which sequence of steps implements a secure authentication strategy that meets these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Configure an Amazon Cognito user pool for user authentication. Create an Amazon Cognito application client for the web application. Implement an Amazon API Gateway HTTP API with AWS Lambda authorizers that validate tokens before forwarding requests to the microservices. Set up an IAM role for each microservice and grant each role appropriate permissions."
+      },
+      {
+        "key": "B",
+        "text": "Set up AWS IAM Identity Center to give users access to the microservices. Create an Amazon DynamoDB table to store user credentials for each microservice. Implement an Amazon API Gateway HTTP API with AWS Lambda authorizers that validate tokens. Set up an IAM role for each microservice and grant each role appropriate permissions."
+      },
+      {
+        "key": "C",
+        "text": "Create an Amazon DynamoDB table to store user credentials for each microservice. Create an Amazon Cognito application client for the web application. Set up an IAM role for each microservice and grant each role appropriate permissions. Implement an Amazon API Gateway HTTP API with AWS Lambda authorizers that validate tokens."
+      },
+      {
+        "key": "D",
+        "text": "Configure an Amazon Cognito user pool for user authentication. Set up an IAM role for each microservice and grant each role appropriate permissions. Create an Amazon DynamoDB table to store user credentials for each microservice. Implement an Amazon API Gateway HTTP API with AWS Lambda authorizers that validate tokens."
+      }
+    ],
+    "correctAnswers": [
+      "A"
+    ],
+    "explanation": "A is correct. An Amazon Cognito user pool provides managed authentication for external users with no user database to operate, an application client lets the web application interact with the pool, Lambda authorizers on an API Gateway HTTP API validate the pool's tokens before requests reach the microservices, and per-microservice IAM roles supply temporary credentials with least-privilege permissions. B is wrong because IAM Identity Center is for workforce access, not external application users, and a DynamoDB credential table reintroduces the user-database management the requirements exclude. C is wrong because it also builds a self-managed credential store in DynamoDB, which adds overhead and risk compared with Cognito-managed authentication. D is wrong because it includes the unnecessary DynamoDB credential table and defers token validation until after roles are wired, leaving the services without an authentication gate.",
+    "tags": [
+      "Cognito",
+      "API Gateway",
+      "Lambda authorizer",
+      "ECS",
+      "temporary credentials"
+    ]
+  },
+  {
+    "id": "5523241d2cc8",
+    "certificationId": "aws-scs",
+    "domain": "Identity and Access Management",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "An AWS account administrator created an IAM group for the company's developers and attached a managed policy that is designed to require multi-factor authentication (MFA). The policy contains a Deny statement for all actions with a condition of Bool aws:MultiFactorAuthPresent: false, along with a NotAction exemption that allows users to manage and enable their own MFA devices. After the policy is applied, developers who authenticate to the AWS Management Console with MFA can work normally, but the same users report that every Amazon EC2 command that they run with the AWS CLI by using their long-term access keys fails with an authorization error. What should the administrator do to resolve this problem while still enforcing MFA?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Change the condition in the Deny statement so that it tests whether aws:MultiFactorAuthPresent is true instead of false."
+      },
+      {
+        "key": "B",
+        "text": "Instruct users to run the aws sts get-session-token CLI command with the --serial-number and --token-code parameters, and to use the returned temporary credentials for subsequent API and CLI calls."
+      },
+      {
+        "key": "C",
+        "text": "Implement federated API and CLI access with SAML 2.0, and configure the identity provider to enforce multi-factor authentication for every sign-in."
+      },
+      {
+        "key": "D",
+        "text": "Create a role that enforces MFA in its trust policy, instruct users to run sts assume-role with the --serial-number and --token-code parameters, and add sts:AssumeRole to the NotAction element of the Deny statement."
+      }
+    ],
+    "correctAnswers": [
+      "B"
+    ],
+    "explanation": "B is correct. Requests signed with long-term access keys carry no MFA context, so the aws:MultiFactorAuthPresent key is absent and the Deny statement blocks them. Calling sts get-session-token with the MFA device serial number and a current token code returns temporary credentials whose sessions include aws:MultiFactorAuthPresent set to true, so subsequent CLI calls pass the condition. A is wrong because denying when the key is true would block exactly the MFA-authenticated sessions and allow non-MFA access. C is wrong because migrating all API access to SAML federation is a re-architecture of the company's identity model, which is unnecessary to fix CLI access for existing IAM users. D is wrong because adding sts:AssumeRole to the NotAction exemption lets any principal without MFA assume roles, creating a bypass that undermines the MFA requirement.",
+    "tags": [
+      "MFA",
+      "STS",
+      "get-session-token",
+      "IAM policy conditions",
+      "CLI"
+    ]
+  },
+  {
+    "id": "0bb6a5801b45",
+    "certificationId": "aws-scs",
+    "domain": "Security Foundations and Governance",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A company uses AWS Organizations with the default FullAWSAccess SCP attached to all organizational units. The security team must restrict AWS usage for all existing and future accounts in a specific OU so that resources can be created only in the eu-west-1 Region. A defined set of global services, including IAM, Amazon CloudFront, Amazon Route 53, and AWS Support, must continue to work from their default endpoints. A security engineer will attach a new SCP to the OU. Which SCP meets these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "A statement with Effect: Allow and Action: \"*\" that includes a condition of StringEquals aws:RequestedRegion: eu-west-1."
+      },
+      {
+        "key": "B",
+        "text": "A statement with Effect: Deny and Action: \"*\" that includes a condition of StringEquals aws:RequestedRegion: eu-west-1."
+      },
+      {
+        "key": "C",
+        "text": "A statement with Effect: Deny and Action: \"*\" that includes a condition of StringNotEquals aws:RequestedRegion: eu-west-1."
+      },
+      {
+        "key": "D",
+        "text": "A statement with Effect: Deny and NotAction set to the global service actions (iam:*, cloudfront:*, route53:*, support:*) that includes a condition of StringNotEquals aws:RequestedRegion: eu-west-1."
+      }
+    ],
+    "correctAnswers": [
+      "D"
+    ],
+    "explanation": "D is correct. The Deny applies to every action except the exempted global service actions, and the StringNotEquals condition makes the Deny fire only for requests outside eu-west-1, so regional usage is confined to eu-west-1 while the named global services keep working; because SCPs attached to an OU apply to every current and future account in that OU, no per-account work is needed. A is wrong because SCPs do not grant permissions, and with FullAWSAccess still attached an additional Allow statement imposes no restriction at all. B is wrong because its logic is inverted: it denies requests that are in eu-west-1, the one Region that should remain usable. C is wrong because it denies all non-eu-west-1 requests with no exemption, which breaks the required global services since their control planes resolve to Regions such as us-east-1.",
+    "tags": [
+      "SCP",
+      "Organizations",
+      "aws:RequestedRegion",
+      "region restriction"
+    ]
+  },
+  {
+    "id": "278bc10989fd",
+    "certificationId": "aws-scs",
+    "domain": "Identity and Access Management",
+    "difficulty": "professional",
+    "type": "single",
+    "stem": "A security engineer needs to configure AWS IAM Identity Center to use the company's external SAML 2.0 identity provider (IdP) as its identity source, and must set up automatic provisioning so that users and groups synchronize from the IdP. Which sequence of steps meets these requirements?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Obtain the SAML metadata from IAM Identity Center. Obtain the SAML metadata from the external IdP. Configure the external IdP as the identity source in IAM Identity Center by exchanging the metadata between the two systems. Enable automatic provisioning in the IAM Identity Center settings. Enable automatic provisioning in the external IdP by using the provisioning endpoint and access token."
+      },
+      {
+        "key": "B",
+        "text": "Configure the external IdP as the identity source in IAM Identity Center. Enable automatic provisioning in the external IdP. Obtain the SAML metadata from IAM Identity Center. Obtain the SAML metadata from the external IdP. Enable automatic provisioning in the IAM Identity Center settings."
+      },
+      {
+        "key": "C",
+        "text": "Create an IAM role that has a trust policy that specifies the IdP's API endpoint. Obtain the SAML metadata from the external IdP. Configure the external IdP as the identity source in IAM Identity Center. Enable automatic provisioning in the IAM Identity Center settings. Enable automatic provisioning in the external IdP."
+      },
+      {
+        "key": "D",
+        "text": "Enable automatic provisioning in the external IdP. Enable automatic provisioning in the IAM Identity Center settings. Obtain the SAML metadata from the external IdP. Obtain the SAML metadata from IAM Identity Center. Configure the external IdP as the identity source in IAM Identity Center."
+      }
+    ],
+    "correctAnswers": [
+      "A"
+    ],
+    "explanation": "A is correct. Changing the identity source to an external IdP is a metadata exchange: the engineer collects the SAML metadata that each side presents, uploads the IdP's metadata into IAM Identity Center while giving the Identity Center metadata to the IdP, and only then enables SCIM automatic provisioning, first in Identity Center, which generates the SCIM endpoint and access token, and then in the IdP, which consumes them. B is wrong because it configures the identity source before the metadata that the configuration requires has been obtained, and it enables provisioning in the IdP before the SCIM endpoint exists. C is wrong because IAM Identity Center federation is configured in Identity Center itself; no IAM role trust policy pointing at an IdP API endpoint is involved. D is wrong because provisioning cannot be enabled in the IdP first, since the SCIM endpoint and token are produced by IAM Identity Center, and the metadata exchange must precede everything.",
+    "tags": [
+      "IAM Identity Center",
+      "SAML",
+      "SCIM",
+      "external IdP"
+    ]
+  }
+]

@@ -5,6 +5,7 @@ import awsSaa from "../../../data/questions/aws-saa.json";
 import awsDevops from "../../../data/questions/aws-devops.json";
 import awsAip from "../../../data/questions/aws-aip.json";
 import awsAns from "../../../data/questions/aws-ans.json";
+import awsScs from "../../../data/questions/aws-scs.json";
 
 const banks = [
   { name: "aws-sap", questions: awsSap },
@@ -12,6 +13,7 @@ const banks = [
   { name: "aws-devops", questions: awsDevops },
   { name: "aws-aip", questions: awsAip },
   { name: "aws-ans", questions: awsAns },
+  { name: "aws-scs", questions: awsScs },
 ];
 
 describe("question banks", () => {

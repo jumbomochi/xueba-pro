@@ -16,6 +16,7 @@ const questionImports: Record<string, () => Promise<{ default: Question[] }>> = 
   "aws-devops": () => import("../../data/questions/aws-devops.json") as Promise<{ default: Question[] }>,
   "aws-aip": () => import("../../data/questions/aws-aip.json") as Promise<{ default: Question[] }>,
   "aws-ans": () => import("../../data/questions/aws-ans.json") as Promise<{ default: Question[] }>,
+  "aws-scs": () => import("../../data/questions/aws-scs.json") as Promise<{ default: Question[] }>,
 };
 
 export async function getQuestions(certificationId: string): Promise<Question[]> {
