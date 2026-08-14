@@ -782,7 +782,7 @@
       },
       {
         "key": "B",
-        "text": "From the security-tooling account, send a GuardDuty membership invitation to each of the 60 accounts and ask each account's owner to accept the invitation."
+        "text": "In the security-tooling account, add all existing organization accounts as GuardDuty members and turn on the auto-enable setting so GuardDuty is enabled for accounts that join later."
       },
       {
         "key": "C",
@@ -794,14 +794,14 @@
       },
       {
         "key": "E",
-        "text": "In the security-tooling account, add all existing organization accounts as GuardDuty members and turn on the auto-enable setting so GuardDuty is enabled for accounts that join later."
+        "text": "From the security-tooling account, send a GuardDuty membership invitation to each of the 60 accounts and ask each account's owner to accept the invitation."
       }
     ],
     "correctAnswers": [
       "A",
-      "E"
+      "B"
     ],
-    "explanation": "A and E are correct. GuardDuty administration is Regional, so the management account must delegate the security-tooling account as administrator in every Region to be monitored, and the delegated administrator must then enroll the existing accounts as members and turn on auto-enable so that future accounts are covered the moment they join. B is wrong because organization integration makes invitations unnecessary; the delegated administrator adds organization accounts directly without owner acceptance. C is wrong because a service control policy is a preventive guardrail that hardens the deployment but neither enables GuardDuty nor enrolls any account. D is wrong because a GuardDuty detector monitors only the account it belongs to; there is no automatic organization-wide monitoring without designating an administrator and enrolling members.",
+    "explanation": "A and B are correct. GuardDuty administration is Regional, so the management account must delegate the security-tooling account as administrator in every Region to be monitored, and the delegated administrator must then enroll the existing accounts as members and turn on auto-enable so that future accounts are covered the moment they join. C is wrong because a service control policy is a preventive guardrail that hardens the deployment but neither enables GuardDuty nor enrolls any account. D is wrong because a GuardDuty detector monitors only the account it belongs to; there is no automatic organization-wide monitoring without designating an administrator and enrolling members. E is wrong because organization integration makes invitations unnecessary; the delegated administrator adds organization accounts directly without owner acceptance.",
     "tags": [
       "GuardDuty",
       "delegated administrator",
@@ -1145,18 +1145,18 @@
       },
       {
         "key": "D",
-        "text": "Detach all permissions policies from the function's execution role so that any attacker code that continues to run cannot make successful AWS API calls."
+        "text": "Download the function's deployment package and configuration, and preserve its CloudWatch Logs log group and recent traces as evidence for the forensic investigation."
       },
       {
         "key": "E",
-        "text": "Download the function's deployment package and configuration, and preserve its CloudWatch Logs log group and recent traces as evidence for the forensic investigation."
+        "text": "Detach all permissions policies from the function's execution role so that any attacker code that continues to run cannot make successful AWS API calls."
       }
     ],
     "correctAnswers": [
       "A",
-      "E"
+      "D"
     ],
-    "explanation": "A and E are correct. Setting reserved concurrency to zero throttles every new execution regardless of whether the trigger is the SQS event source mapping or a direct SDK call, which halts attacker code through all invocation paths without altering the function, and preserving the deployment package, configuration, and logs retains the artifacts the investigation needs. B is wrong because it covers only the SQS path and depends on other teams pausing their calls, so direct invocations can still execute attacker code. C is wrong because deleting the function destroys the compromised artifact that the forensic team must analyze. D is wrong because the execution role is shared, so stripping its policies breaks several unaffected production functions, and code that is still running could continue its non-AWS network activity anyway.",
+    "explanation": "A and D are correct. Setting reserved concurrency to zero throttles every new execution regardless of whether the trigger is the SQS event source mapping or a direct SDK call, which halts attacker code through all invocation paths without altering the function, and preserving the deployment package, configuration, and logs retains the artifacts the investigation needs. B is wrong because it covers only the SQS path and depends on other teams pausing their calls, so direct invocations can still execute attacker code. C is wrong because deleting the function destroys the compromised artifact that the forensic team must analyze. E is wrong because the execution role is shared, so stripping its policies breaks several unaffected production functions, and code that is still running could continue its non-AWS network activity anyway.",
     "tags": [
       "Lambda",
       "GuardDuty Lambda Protection",
@@ -2717,7 +2717,7 @@
       },
       {
         "key": "C",
-        "text": "Purchase AWS Enterprise Support, which includes direct engagement from the Shield Response Team during DDoS events without any additional protection subscription."
+        "text": "After onboarding to Shield Advanced, use its cost protection to request service credits for usage spikes that protected resources incur as a result of DDoS attacks."
       },
       {
         "key": "D",
@@ -2725,14 +2725,14 @@
       },
       {
         "key": "E",
-        "text": "After onboarding to Shield Advanced, use its cost protection to request service credits for usage spikes that protected resources incur as a result of DDoS attacks."
+        "text": "Purchase AWS Enterprise Support, which includes direct engagement from the Shield Response Team during DDoS events without any additional protection subscription."
       }
     ],
     "correctAnswers": [
       "A",
-      "E"
+      "C"
     ],
-    "explanation": "A and E are correct. Subscribing to Shield Advanced and protecting the CloudFront distribution and the load balancer gives the company access to the Shield Response Team, which the existing Business Support plan lets the team engage for mitigation assistance during attacks, closing the expertise gap. Cost protection is a separate Shield Advanced benefit: once the resources are protected, the company can request service credits for the scaling charges that DDoS attacks cause; note that AWS requires the associated web ACL to carry a rate-based rule in Block mode as a prerequisite for such credit requests, but that rule alone confers no credit entitlement without the subscription. B is wrong because Shield Standard provides automatic network and transport layer mitigation only and includes no Shield Response Team involvement. C is wrong because a support plan by itself does not provide Shield Response Team engagement for DDoS mitigation; that requires a Shield Advanced subscription. D is wrong because Shield Standard includes no cost-protection or service-credit benefit; DDoS-related credits apply only to resources protected under a Shield Advanced subscription.",
+    "explanation": "A and C are correct. Subscribing to Shield Advanced and protecting the CloudFront distribution and the load balancer gives the company access to the Shield Response Team, which the existing Business Support plan lets the team engage for mitigation assistance during attacks, closing the expertise gap. Cost protection is a separate Shield Advanced benefit: once the resources are protected, the company can request service credits for the scaling charges that DDoS attacks cause; note that AWS requires the associated web ACL to carry a rate-based rule in Block mode as a prerequisite for such credit requests, but that rule alone confers no credit entitlement without the subscription. B is wrong because Shield Standard provides automatic network and transport layer mitigation only and includes no Shield Response Team involvement. D is wrong because Shield Standard includes no cost-protection or service-credit benefit; DDoS-related credits apply only to resources protected under a Shield Advanced subscription. E is wrong because a support plan by itself does not provide Shield Response Team engagement for DDoS mitigation; that requires a Shield Advanced subscription.",
     "tags": [
       "Shield Advanced",
       "Shield Response Team",
@@ -3849,7 +3849,7 @@
       },
       {
         "key": "B",
-        "text": "Delete the existing access key first and immediately create a replacement that reuses the same access key ID so that the application configuration does not need to change."
+        "text": "After the application switches to the new key, check the old key's last-used timestamp to verify it is idle, deactivate the old key, and delete it after a monitoring period with no errors."
       },
       {
         "key": "C",
@@ -3861,14 +3861,14 @@
       },
       {
         "key": "E",
-        "text": "After the application switches to the new key, check the old key's last-used timestamp to verify it is idle, deactivate the old key, and delete it after a monitoring period with no errors."
+        "text": "Delete the existing access key first and immediately create a replacement that reuses the same access key ID so that the application configuration does not need to change."
       }
     ],
     "correctAnswers": [
       "A",
-      "E"
+      "B"
     ],
-    "explanation": "A and E are correct. An IAM user can hold two access keys at once, so creating the second key and cutting the application over first means the old credential stays valid during the transition, and checking last-used information before deactivating, then deleting, the old key proves nothing still depends on it, which prevents a repeat outage. B is wrong because access key IDs cannot be reused; deleting the key first is exactly the sequence that caused the previous outage. C is wrong because swapping entire IAM users each quarter multiplies lifecycle work and changes the principal ARN that policies reference. D is wrong because GetSessionToken credentials are still derived from the long-term key, which continues to exist and still requires rotation.",
+    "explanation": "A and B are correct. An IAM user can hold two access keys at once, so creating the second key and cutting the application over first means the old credential stays valid during the transition, and checking last-used information before deactivating, then deleting, the old key proves nothing still depends on it, which prevents a repeat outage. C is wrong because swapping entire IAM users each quarter multiplies lifecycle work and changes the principal ARN that policies reference. D is wrong because GetSessionToken credentials are still derived from the long-term key, which continues to exist and still requires rotation. E is wrong because access key IDs cannot be reused; deleting the key first is exactly the sequence that caused the previous outage.",
     "tags": [
       "access key rotation",
       "IAM users",
@@ -3977,7 +3977,7 @@
       },
       {
         "key": "C",
-        "text": "Attach an identity-based policy to the ingest bucket that allows sns:Publish on the topic so that the publish permission is granted from the bucket's side as well."
+        "text": "Add a Condition requiring aws:SourceArn to equal the ARN of the designated ingest bucket."
       },
       {
         "key": "D",
@@ -3985,14 +3985,14 @@
       },
       {
         "key": "E",
-        "text": "Add a Condition requiring aws:SourceArn to equal the ARN of the designated ingest bucket."
+        "text": "Attach an identity-based policy to the ingest bucket that allows sns:Publish on the topic so that the publish permission is granted from the bucket's side as well."
       }
     ],
     "correctAnswers": [
-      "D",
-      "E"
+      "C",
+      "D"
     ],
-    "explanation": "D and E are correct. When a service principal makes a request on behalf of a resource, aws:SourceAccount and aws:SourceArn identify the account and the specific resource that triggered the call, so requiring the company's account ID and the exact bucket ARN ensures only the designated ingest bucket can publish through the S3 service, which is the standard cross-service confused-deputy mitigation; because an S3 bucket ARN contains no account ID, aws:SourceArn alone cannot constrain the owning account, so AWS requires both keys together. A is wrong because service-principal requests do not carry a customer organization context, so an aws:PrincipalOrgID condition would not match and would break the integration rather than scope it. B is wrong because a bucket ARN is a resource identifier, not a principal, and cannot appear in the Principal element. C is wrong because S3 buckets have no identity-based policies; permissions on the topic side are what govern publishing.",
+    "explanation": "C and D are correct. When a service principal makes a request on behalf of a resource, aws:SourceAccount and aws:SourceArn identify the account and the specific resource that triggered the call, so requiring the company's account ID and the exact bucket ARN ensures only the designated ingest bucket can publish through the S3 service, which is the standard cross-service confused-deputy mitigation; because an S3 bucket ARN contains no account ID, aws:SourceArn alone cannot constrain the owning account, so AWS requires both keys together. A is wrong because service-principal requests do not carry a customer organization context, so an aws:PrincipalOrgID condition would not match and would break the integration rather than scope it. B is wrong because a bucket ARN is a resource identifier, not a principal, and cannot appear in the Principal element. E is wrong because S3 buckets have no identity-based policies; permissions on the topic side are what govern publishing.",
     "tags": [
       "aws:SourceArn",
       "aws:SourceAccount",
@@ -4305,12 +4305,12 @@
     ]
   },
   {
-    "id": "8d23b23aaba4",
+    "id": "437d93d8df66",
     "certificationId": "aws-scs",
     "domain": "Data Protection",
     "difficulty": "professional",
     "type": "single",
-    "stem": "A company imported its own key material from an on-premises HSM into a symmetric AWS KMS key with origin EXTERNAL two years ago, satisfying a policy that all cryptographic material must originate in hardware the company controls. The same policy requires the encryption material to be rotated every 12 months. A security engineer tried to enable automatic key rotation on the key from the console, but the operation failed. All applications reference the key through an alias rather than a key ID, and the company will generate the replacement material in the same on-premises HSM. The engineer must implement rotation while ensuring that data encrypted under the old material remains decryptable. Which solution meets these requirements?",
+    "stem": "A company imported its own key material from an on-premises HSM into a symmetric AWS KMS key with origin EXTERNAL two years ago, satisfying a policy that all cryptographic material must originate in hardware the company controls. The same policy requires the encryption material to be rotated every 12 months. A security engineer tried to enable automatic key rotation on the key from the console, but the operation failed. All applications reference the key through an alias rather than a key ID, and the company will generate the replacement material in the same on-premises HSM. The engineer must implement rotation while ensuring that data encrypted under the old material remains decryptable. Which solution meets these requirements with the LEAST operational overhead?",
     "options": [
       {
         "key": "A",
@@ -4332,7 +4332,7 @@
     "correctAnswers": [
       "B"
     ],
-    "explanation": "B is correct. AWS KMS supports on-demand rotation for keys with imported material: the engineer imports the newly generated material into the same key, where it waits in the PENDING_ROTATION state, and then calls RotateKeyOnDemand. The key ID, ARN, and alias never change, and KMS retains every earlier version of the imported material as long as it has not expired or been removed with DeleteImportedKeyMaterial, so ciphertext encrypted before the rotation still decrypts transparently. A is wrong because no support opt-in exists; automatic annual rotation is genuinely unsupported for the EXTERNAL origin, and on-demand rotation is the only rotation KMS offers for it. C is wrong because creating a replacement key and re-pointing the alias is the legacy workaround: it still works, but it proliferates keys and churns the ARN behind the alias, operational overhead that rotating the existing key in place eliminates. D is wrong because an existing single-Region key cannot be converted to multi-Region, and replica keys deliberately share the same key material as the primary, so nothing would rotate.",
+    "explanation": "B is correct. AWS KMS supports on-demand rotation for keys with imported material: the engineer imports the newly generated material into the same key, where it waits in the PENDING_ROTATION state, and then calls RotateKeyOnDemand. The key ID, ARN, and alias never change, and KMS retains every earlier version of the imported material as long as it has not expired or been removed with DeleteImportedKeyMaterial, so ciphertext encrypted before the rotation still decrypts transparently. A is wrong because no support opt-in exists; automatic annual rotation is genuinely unsupported for the EXTERNAL origin, and on-demand rotation is the only rotation KMS offers for it. C is wrong because, although creating a replacement key and repointing the alias does keep the older ciphertext decryptable, it is the legacy workaround and carries far more operational overhead than the requirements allow: every rotation cycle proliferates another key that must be tracked and retained, the ARN behind the alias churns, and the cutover is a manual step, all of which rotating the existing key in place eliminates. D is wrong because an existing single-Region key cannot be converted to multi-Region, and replica keys deliberately share the same key material as the primary, so nothing would rotate.",
     "tags": [
       "imported key material",
       "on-demand rotation",
@@ -4422,7 +4422,7 @@
     "options": [
       {
         "key": "A",
-        "text": "Modify each existing unencrypted volume's encryption attribute so that the volume is converted to an encrypted volume in place with the customer managed key and without detaching it."
+        "text": "Snapshot each unencrypted volume, copy the snapshot with encryption under the customer managed key, create replacement volumes from the encrypted copies, and swap the attachments."
       },
       {
         "key": "B",
@@ -4438,14 +4438,14 @@
       },
       {
         "key": "E",
-        "text": "Snapshot each unencrypted volume, copy the snapshot with encryption under the customer managed key, create replacement volumes from the encrypted copies, and swap the attachments."
+        "text": "Modify each existing unencrypted volume's encryption attribute so that the volume is converted to an encrypted volume in place with the customer managed key and without detaching it."
       }
     ],
     "correctAnswers": [
-      "B",
-      "E"
+      "A",
+      "B"
     ],
-    "explanation": "B and E are correct. B makes encryption automatic at creation time: with encryption by default enabled, every new volume and snapshot restore in the Region is encrypted under the configured key regardless of what the launch template, stack, or tool specifies, and requests succeed rather than fail. E is the only way to encrypt existing data, because EBS encryption cannot be turned on for a volume after creation; the snapshot-copy-restore-swap sequence produces encrypted replacements. A is wrong because no in-place encryption attribute exists for EBS volumes. C is wrong for the same reason; a remediation action cannot convert a volume in place, so the rule can only detect. D is wrong because an SCP rejects noncompliant requests, causing exactly the launch failures the requirements prohibit, and it does nothing for the existing volumes.",
+    "explanation": "A and B are correct. A is the only way to encrypt the existing data, because EBS encryption cannot be turned on for a volume after creation; the snapshot-copy-restore-swap sequence produces encrypted replacements. B makes encryption automatic at creation time: with encryption by default enabled, every new volume and snapshot restore in the Region is encrypted under the configured key regardless of what the launch template, stack, or tool specifies, and requests succeed rather than fail. C is wrong because a remediation action cannot convert a volume in place, so the AWS Config rule can only detect noncompliant volumes. D is wrong because an SCP rejects noncompliant requests, causing exactly the launch failures the requirements prohibit, and it does nothing for the existing volumes. E is wrong because no in-place encryption attribute exists for EBS volumes.",
     "tags": [
       "EBS encryption by default",
       "snapshot copy",
@@ -5194,24 +5194,24 @@
     ]
   },
   {
-    "id": "b38b72e97c59",
+    "id": "622918b9b05a",
     "certificationId": "aws-scs",
     "domain": "Security Foundations and Governance",
     "difficulty": "professional",
     "type": "single",
-    "stem": "A company manages 60 AWS accounts with AWS Organizations. Amazon GuardDuty and AWS Security Hub were originally enabled with the management account acting as the administrator account for both services, and security analysts sign in to the management account daily to triage findings. An internal audit cites this as a violation of the company's policy that the management account must be used only for tasks that require it. The security team owns a dedicated security-tooling account that is a member of the organization. The team must move day-to-day administration of GuardDuty and Security Hub out of the management account while retaining organization-wide coverage of all existing and future accounts. Which approach meets these requirements with the LEAST operational overhead?",
+    "stem": "A company manages 60 AWS accounts with AWS Organizations. Amazon GuardDuty and AWS Security Hub CSPM (formerly Security Hub) were originally enabled with the management account acting as the administrator account for both services, and security analysts sign in to the management account daily to triage findings. An internal audit cites this as a violation of the company's policy that the management account must be used only for tasks that require it. The security team owns a dedicated security-tooling account that is a member of the organization. The team must move day-to-day administration of GuardDuty and Security Hub CSPM out of the management account while retaining organization-wide coverage of all existing and future accounts. Which approach meets these requirements with the LEAST operational overhead?",
     "options": [
       {
         "key": "A",
-        "text": "From the management account, register the security-tooling account as the delegated administrator for GuardDuty and Security Hub, and manage member accounts and findings from the security-tooling account."
+        "text": "From the management account, register the security-tooling account as the delegated administrator for GuardDuty and Security Hub CSPM, and manage member accounts and findings from the security-tooling account."
       },
       {
         "key": "B",
-        "text": "Create an IAM role in the management account that the security analysts assume from the security-tooling account, and continue to administer GuardDuty and Security Hub through that assumed role."
+        "text": "Create an IAM role in the management account that the security analysts assume from the security-tooling account, and continue to administer GuardDuty and Security Hub CSPM through that assumed role."
       },
       {
         "key": "C",
-        "text": "Enable GuardDuty and Security Hub independently in every member account, and configure EventBridge rules in each account to forward findings to an event bus in the security-tooling account."
+        "text": "Enable GuardDuty and Security Hub CSPM independently in every member account, and configure EventBridge rules in each account to forward findings to an event bus in the security-tooling account."
       },
       {
         "key": "D",
@@ -5221,11 +5221,11 @@
     "correctAnswers": [
       "A"
     ],
-    "explanation": "A is correct. GuardDuty and Security Hub support delegated administration: the management account registers a member account as the delegated administrator, after which that account manages the organization configuration, auto-enables coverage for existing and future accounts, and triages findings, so analysts no longer need to sign in to the management account. B is wrong because the analysts would still perform daily administration inside the management account through the assumed role, which is exactly what the audit flagged. C is wrong because per-account enablement plus per-account EventBridge forwarding must be repeated for every new account and provides aggregation only, not central administration. D is wrong because AWS Config aggregators collect resource configuration and Config rule compliance, not GuardDuty or Security Hub findings, and disabling the services removes the organization-wide coverage the team must retain.",
+    "explanation": "A is correct. GuardDuty and Security Hub CSPM support delegated administration: the management account registers a member account as the delegated administrator, after which that account manages the organization configuration, auto-enables coverage for existing and future accounts, and triages findings, so analysts no longer need to sign in to the management account. B is wrong because the analysts would still perform daily administration inside the management account through the assumed role, which is exactly what the audit flagged. C is wrong because per-account enablement plus per-account EventBridge forwarding must be repeated for every new account and provides aggregation only, not central administration. D is wrong because AWS Config aggregators collect resource configuration and Config rule compliance, not GuardDuty or Security Hub CSPM findings, and disabling the services removes the organization-wide coverage the team must retain.",
     "tags": [
       "delegated administrator",
       "GuardDuty",
-      "Security Hub",
+      "Security Hub CSPM",
       "Organizations",
       "management account"
     ]
@@ -5502,7 +5502,7 @@
       },
       {
         "key": "C",
-        "text": "Enable a Security Hub standard that contains equivalent controls and use central configuration from the security-tooling account to apply the standard to all accounts."
+        "text": "Enable an AWS Security Hub CSPM standard that contains equivalent controls and use central configuration from the security-tooling account to apply the standard to all accounts."
       },
       {
         "key": "D",
@@ -5512,7 +5512,7 @@
     "correctAnswers": [
       "A"
     ],
-    "explanation": "A is correct. An organization conformance pack deploys the rules and remediation documents to every existing and future member account, is reported on as a single compliance unit per account, cannot be deleted by member account administrators because it is managed at the organization level, and delegated administration lets the security-tooling account own the deployment instead of the management account. B is wrong because StackSets creates the rules as individual account-level resources, so there is no packaged compliance view, and drift from local changes must be detected and repaired. C is wrong because Security Hub standards are predefined control sets; they cannot package the company's own 40 Config rules with custom remediation documents. D is wrong because per-account self-service deployment leaves the packs deletable locally, misses new accounts, and depends on every team acting.",
+    "explanation": "A is correct. An organization conformance pack deploys the rules and remediation documents to every existing and future member account, is reported on as a single compliance unit per account, cannot be deleted by member account administrators because it is managed at the organization level, and delegated administration lets the security-tooling account own the deployment instead of the management account. B is wrong because StackSets creates the rules as individual account-level resources, so there is no packaged compliance view, and drift from local changes must be detected and repaired. C is wrong because Security Hub CSPM standards are predefined control sets; they cannot package the company's own 40 Config rules with custom remediation documents. D is wrong because per-account self-service deployment leaves the packs deletable locally, misses new accounts, and depends on every team acting.",
     "tags": [
       "Config conformance packs",
       "delegated administrator",
@@ -5606,7 +5606,7 @@
       },
       {
         "key": "B",
-        "text": "Enable the PCI DSS standard in Security Hub across all accounts and export the aggregated findings to provide to the assessor."
+        "text": "Enable the PCI DSS standard in AWS Security Hub CSPM across all accounts and export the aggregated findings to provide to the assessor."
       },
       {
         "key": "C",
@@ -5620,7 +5620,7 @@
     "correctAnswers": [
       "D"
     ],
-    "explanation": "D is correct. Audit Manager continuously and automatically collects evidence, such as configuration snapshots, compliance check results, and CloudTrail activity, across the in-scope accounts, organizes it under the controls of the chosen PCI DSS framework, tracks review status and delegations for each item, and produces assessor-ready assessment reports on demand. A is wrong because AWS Artifact provides AWS's own audit reports about the AWS side of the shared responsibility model; it contains no evidence about the company's workloads. B is wrong because Security Hub reports pass or fail findings against its PCI checks; it does not assemble evidence by framework control, track evidence review, or generate assessment reports. C is wrong because an aggregator exposes raw resource configuration data, leaving the team to map, package, and track evidence manually, which is the burden being eliminated.",
+    "explanation": "D is correct. Audit Manager continuously and automatically collects evidence, such as configuration snapshots, compliance check results, and CloudTrail activity, across the in-scope accounts, organizes it under the controls of the chosen PCI DSS framework, tracks review status and delegations for each item, and produces assessor-ready assessment reports on demand. A is wrong because AWS Artifact provides AWS's own audit reports about the AWS side of the shared responsibility model; it contains no evidence about the company's workloads. B is wrong because Security Hub CSPM reports pass or fail findings against its PCI checks; it does not assemble evidence by framework control, track evidence review, or generate assessment reports. C is wrong because an aggregator exposes raw resource configuration data, leaving the team to map, package, and track evidence manually, which is the burden being eliminated.",
     "tags": [
       "Audit Manager",
       "PCI DSS",
@@ -5650,13 +5650,13 @@
       },
       {
         "key": "D",
-        "text": "Export the compliance summary from AWS Security Hub showing the company's passing checks for the relevant standards and share it with the auditor."
+        "text": "Export the compliance summary from AWS Security Hub CSPM showing the company's passing checks for the relevant standards and share it with the auditor."
       }
     ],
     "correctAnswers": [
       "A"
     ],
-    "explanation": "A is correct. AWS Artifact is the self-service portal for AWS's own third-party audit artifacts: it serves the current SOC reports and ISO certificates on demand, gates each download behind the applicable confidentiality terms, and always offers the latest published reporting period, which covers every part of the request. B is wrong because AWS does not distribute these audit reports through support cases; they are delivered through Artifact, and no recurring delivery subscription exists. C is wrong because an Audit Manager assessment evaluates the company's own environment; it cannot produce AWS's independent auditor reports about AWS's controls. D is wrong because Security Hub findings describe the company's resource compliance, which is the customer portion of the shared responsibility model, not evidence about the provider's controls.",
+    "explanation": "A is correct. AWS Artifact is the self-service portal for AWS's own third-party audit artifacts: it serves the current SOC reports and ISO certificates on demand, gates each download behind the applicable confidentiality terms, and always offers the latest published reporting period, which covers every part of the request. B is wrong because AWS does not distribute these audit reports through support cases; they are delivered through Artifact, and no recurring delivery subscription exists. C is wrong because an Audit Manager assessment evaluates the company's own environment; it cannot produce AWS's independent auditor reports about AWS's controls. D is wrong because Security Hub CSPM findings describe the company's resource compliance, which is the customer portion of the shared responsibility model, not evidence about the provider's controls.",
     "tags": [
       "AWS Artifact",
       "SOC 2",
@@ -5737,12 +5737,12 @@
     ]
   },
   {
-    "id": "d918dd7c58f6",
+    "id": "583dfcca55cb",
     "certificationId": "aws-scs",
     "domain": "Security Foundations and Governance",
     "difficulty": "professional",
     "type": "single",
-    "stem": "A company is building a multi-account environment aligned with the AWS Security Reference Architecture. The design must include a home for the delegated administrator of GuardDuty, Security Hub, and Amazon Detective, where security analysts work interactively every day, and a home for the organization's centralized CloudTrail and VPC flow log archive, where data must be immutable and interactive human access is limited to break-glass scenarios. The architects are deciding how to distribute these responsibilities between a security tooling account and a log archive account, both members of the security OU. Both candidate accounts already exist and have no workloads deployed in them. Which distribution of responsibilities follows the AWS Security Reference Architecture?",
+    "stem": "A company is building a multi-account environment aligned with the AWS Security Reference Architecture. The design must include a home for the delegated administrator of GuardDuty, AWS Security Hub CSPM (formerly Security Hub), and Amazon Detective, where security analysts work interactively every day, and a home for the organization's centralized CloudTrail and VPC flow log archive, where data must be immutable and interactive human access is limited to break-glass scenarios. The architects are deciding how to distribute these responsibilities between a security tooling account and a log archive account, both members of the security OU. Both candidate accounts already exist and have no workloads deployed in them. Which distribution of responsibilities follows the AWS Security Reference Architecture?",
     "options": [
       {
         "key": "A",
@@ -5764,7 +5764,7 @@
     "correctAnswers": [
       "D"
     ],
-    "explanation": "D is correct. The SRA assigns interactive security operations, including delegated administration of GuardDuty, Security Hub, and Detective and day-to-day analyst work, to the security tooling account, while the log archive account exists solely to hold immutable, centrally collected logs with tightly restricted access, so routine human activity never occurs where the evidence is stored. A is wrong because combining daily interactive analyst access with the immutable archive violates the separation that keeps log integrity defensible; analysts can query logs cross-account instead. B is wrong because the SRA minimizes use of the management account, which should not host security service administration that a member account can perform through delegated administration. C is wrong because it inverts the two accounts' purposes, placing interactive tooling where immutability is required and archival storage where analysts work daily.",
+    "explanation": "D is correct. The SRA assigns interactive security operations, including delegated administration of GuardDuty, Security Hub CSPM, and Detective and day-to-day analyst work, to the security tooling account, while the log archive account exists solely to hold immutable, centrally collected logs with tightly restricted access, so routine human activity never occurs where the evidence is stored. A is wrong because combining daily interactive analyst access with the immutable archive violates the separation that keeps log integrity defensible; analysts can query logs cross-account instead. B is wrong because the SRA minimizes use of the management account, which should not host security service administration that a member account can perform through delegated administration. C is wrong because it inverts the two accounts' purposes, placing interactive tooling where immutability is required and archival storage where analysts work daily.",
     "tags": [
       "Security Reference Architecture",
       "security tooling account",
@@ -5794,13 +5794,13 @@
       },
       {
         "key": "D",
-        "text": "Enable AWS Security Hub with central configuration across the organization and use its consolidated findings as the organization-wide report of the Trusted Advisor security checks."
+        "text": "Enable AWS Security Hub CSPM with central configuration across the organization and use its consolidated findings as the organization-wide report of the Trusted Advisor security checks."
       }
     ],
     "correctAnswers": [
       "A"
     ],
-    "explanation": "A is correct. Organizational view is enabled by the management account through trusted access for Trusted Advisor, and the management account can then create consolidated reports that aggregate check results, including the security checks, for every current and future account in the organization with no per-account deployment. B is wrong because delegated administrators for Trusted Advisor apply to Trusted Advisor Priority, the Enterprise Support engagement feature; organizational view reports can be created and viewed only from the management account. C is wrong because a fleet of assumable roles plus a merging script is custom infrastructure that must be deployed to each new account and maintained, which organizational view makes unnecessary. D is wrong because Security Hub aggregates its own and integrated findings; it does not ingest the Trusted Advisor check catalog, so checks such as exposed access keys would be missing from the report.",
+    "explanation": "A is correct. Organizational view is enabled by the management account through trusted access for Trusted Advisor, and the management account can then create consolidated reports that aggregate check results, including the security checks, for every current and future account in the organization with no per-account deployment. B is wrong because delegated administrators for Trusted Advisor apply to Trusted Advisor Priority, the Enterprise Support engagement feature; organizational view reports can be created and viewed only from the management account. C is wrong because a fleet of assumable roles plus a merging script is custom infrastructure that must be deployed to each new account and maintained, which organizational view makes unnecessary. D is wrong because Security Hub CSPM aggregates its own and integrated findings; it does not ingest the Trusted Advisor check catalog, so checks such as exposed access keys would be missing from the report.",
     "tags": [
       "Trusted Advisor",
       "organizational view",
@@ -5908,7 +5908,7 @@
       },
       {
         "key": "C",
-        "text": "Enable object ACLs on the bucket and grant read access to the audit account's canonical user ID for newly delivered log objects."
+        "text": "Add a statement to the KMS key's policy that grants kms:Decrypt on the key to the analyst role."
       },
       {
         "key": "D",
@@ -5916,14 +5916,14 @@
       },
       {
         "key": "E",
-        "text": "Add a statement to the KMS key's policy that grants kms:Decrypt on the key to the analyst role."
+        "text": "Enable object ACLs on the bucket and grant read access to the audit account's canonical user ID for newly delivered log objects."
       }
     ],
     "correctAnswers": [
       "B",
-      "E"
+      "C"
     ],
-    "explanation": "B and E are correct. Cross-account access requires authorization on both sides: the analyst role's identity policies already allow the calls, but the bucket policy in the log archive account must also grant the role s3:GetObject and s3:ListBucket, and the key policy must also grant kms:Decrypt, because a KMS key never honors a cross-account identity policy unless the key policy itself allows that principal. A is wrong because the role already has Athena permissions, and Athena queries run in the analyst's own account; the failure is S3 and KMS authorization, not Athena. C is wrong because ACLs are the legacy mechanism, are disabled on buckets with bucket-owner-enforced object ownership, and would require per-object grants that the bucket policy handles cleanly. D is wrong because S3 and KMS are accessed through their APIs; no VPC connectivity between the two accounts is involved in the authorization failure.",
+    "explanation": "B and C are correct. Cross-account access requires authorization on both sides: the analyst role's identity policies already allow the calls, but the bucket policy in the log archive account must also grant the role s3:GetObject and s3:ListBucket, and the key policy must also grant kms:Decrypt, because a KMS key never honors a cross-account identity policy unless the key policy itself allows that principal. A is wrong because the role already has Athena permissions, and Athena queries run in the analyst's own account; the failure is S3 and KMS authorization, not Athena. D is wrong because S3 and KMS are accessed through their APIs; no VPC connectivity between the two accounts is involved in the authorization failure. E is wrong because ACLs are the legacy mechanism, are disabled on buckets with bucket-owner-enforced object ownership, and would require per-object grants that the bucket policy handles cleanly.",
     "tags": [
       "cross-account access",
       "bucket policy",
