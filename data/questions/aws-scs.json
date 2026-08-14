@@ -4318,11 +4318,11 @@
       },
       {
         "key": "B",
-        "text": "Create a new KMS key with origin EXTERNAL, import the newly generated key material into it, and repoint the alias to the new key while retaining the old key for decryption."
+        "text": "Generate new material in the on-premises HSM, import it into the existing key as pending rotation material, and call RotateKeyOnDemand so the key rotates in place while earlier material remains available for decryption."
       },
       {
         "key": "C",
-        "text": "Generate new material in the on-premises HSM and import it into the existing key, replacing the old material while KMS transparently keeps the old material available for decryption."
+        "text": "Create a new KMS key with origin EXTERNAL, import the newly generated key material into it, and repoint the alias to the new key while retaining the old key for decryption."
       },
       {
         "key": "D",
@@ -4332,11 +4332,11 @@
     "correctAnswers": [
       "B"
     ],
-    "explanation": "B is correct. KMS does not support automatic rotation for keys with imported material, so rotation is performed manually: create a new key, import the new material, and move the alias so that new encryption operations use the new key. Because KMS selects the decryption key from metadata in the ciphertext rather than from the alias, keeping the old key ensures existing data stays decryptable. A is wrong because no support opt-in exists; automatic rotation is simply unsupported for the EXTERNAL origin. C is wrong because a KMS key with imported material can only ever have that exact same material re-imported; different material cannot be loaded into the existing key. D is wrong because an existing single-Region key cannot be converted to multi-Region, and replica keys deliberately share the same key material as the primary, so nothing would rotate.",
+    "explanation": "B is correct. AWS KMS supports on-demand rotation for keys with imported material: the engineer imports the newly generated material into the same key, where it waits in the PENDING_ROTATION state, and then calls RotateKeyOnDemand. The key ID, ARN, and alias never change, and KMS retains every earlier version of the imported material, so ciphertext encrypted before the rotation still decrypts transparently. A is wrong because no support opt-in exists; automatic annual rotation is genuinely unsupported for the EXTERNAL origin, and on-demand rotation is the only rotation KMS offers for it. C is wrong because creating a replacement key and re-pointing the alias is the legacy workaround: it still works, but it proliferates keys and churns the ARN behind the alias, operational overhead that rotating the existing key in place eliminates. D is wrong because an existing single-Region key cannot be converted to multi-Region, and replica keys deliberately share the same key material as the primary, so nothing would rotate.",
     "tags": [
       "imported key material",
-      "manual key rotation",
-      "KMS alias",
+      "on-demand rotation",
+      "RotateKeyOnDemand",
       "BYOK"
     ]
   },
