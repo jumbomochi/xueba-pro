@@ -87,5 +87,19 @@
     "totalQuestions": 65,
     "timeMinutes": 170,
     "passingScore": 750
+  },
+  {
+    "id": "aws-dea",
+    "name": "AWS Certified Data Engineer - Associate",
+    "code": "DEA-C01",
+    "domains": [
+      { "name": "Data Ingestion and Transformation", "weight": 34 },
+      { "name": "Data Store Management", "weight": 26 },
+      { "name": "Data Operations and Support", "weight": 22 },
+      { "name": "Data Security and Governance", "weight": 18 }
+    ],
+    "totalQuestions": 65,
+    "timeMinutes": 130,
+    "passingScore": 720
   }
 ]
