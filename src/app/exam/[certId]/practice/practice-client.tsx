@@ -23,7 +23,7 @@ export default function PracticeClient() {
   const [showExplanation, setShowExplanation] = useState(false);
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState(false);
   const [lastSelected, setLastSelected] = useState<string[]>([]);
-  const isReviewMode = useRef(false);
+  const [isReviewMode, setIsReviewMode] = useState(false);
   const selectedDomains = useRef<string[]>([]);
   const initRef = useRef(false);
 
@@ -72,7 +72,7 @@ export default function PracticeClient() {
             .filter((q): q is Question => q !== undefined);
 
           if (questions.length > 0) {
-            isReviewMode.current = true;
+            setIsReviewMode(true);
             startExam(certId, "practice", shuffleArray(questions), null);
             setLoading(false);
             return;
@@ -99,7 +99,7 @@ export default function PracticeClient() {
   const prevAnswerCount = useRef(0);
   useEffect(() => {
     if (
-      isReviewMode.current ||
+      isReviewMode ||
       state.questions.length === 0 ||
       state.answers.length === prevAnswerCount.current
     ) {
@@ -116,7 +116,7 @@ export default function PracticeClient() {
       startedAt: state.startedAt,
       savedAt: Date.now(),
     });
-  }, [certId, state.answers, state.questions, state.currentIndex, state.startedAt]);
+  }, [certId, isReviewMode, state.answers, state.questions, state.currentIndex, state.startedAt]);
 
   const handleComplete = useCallback(() => {
     // Save wrong answers
@@ -153,7 +153,7 @@ export default function PracticeClient() {
     // Checkpoint is already auto-saved after each answer.
     // Also save wrong answers gathered so far.
     const wrongAnswers = state.answers.filter((a) => !a.isCorrect);
-    if (wrongAnswers.length > 0 && !isReviewMode.current) {
+    if (wrongAnswers.length > 0 && !isReviewMode) {
       storage.saveWrongAnswers({
         certificationId: certId,
         wrongQuestionIds: wrongAnswers.map((a) => a.questionId),
@@ -200,7 +200,7 @@ export default function PracticeClient() {
         </Button>
       </div>
 
-      {isReviewMode.current && (
+      {isReviewMode && (
         <p className="text-sm text-muted-foreground text-center">
           Reviewing {state.questions.length} incorrect question{state.questions.length !== 1 ? "s" : ""}
         </p>

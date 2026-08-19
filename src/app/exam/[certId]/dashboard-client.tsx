@@ -26,13 +26,18 @@ export default function DashboardClient({ certification: cert }: DashboardClient
   const [wrongSet, setWrongSet] = useState<WrongAnswerSet | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function load() {
       const questions: Question[] = await getQuestions(cert.id);
+      if (cancelled) return;
       setDomainCounts(countByDomain(questions));
+      setCheckpoint(storage.getCheckpoint(cert.id));
+      setWrongSet(storage.getWrongAnswers(cert.id));
     }
     load();
-    setCheckpoint(storage.getCheckpoint(cert.id));
-    setWrongSet(storage.getWrongAnswers(cert.id));
+    return () => {
+      cancelled = true;
+    };
   }, [cert.id]);
 
   const toggleDomain = (domainName: string) => {
